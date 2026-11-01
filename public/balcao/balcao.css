@@ -89,6 +89,9 @@ main { padding: 18px 20px 48px; }
 .nav:hover:not(:disabled) { background: rgba(255, 255, 255, .06); }
 .nav:disabled { opacity: .2; cursor: default; }
 
+/* não pode ser display: none, senão o navegador não imprime o conteúdo */
+.print-frame { position: fixed; width: 0; height: 0; border: 0; }
+
 .toast {
   position: fixed; left: 50%; bottom: 20px; z-index: 20; transform: translateX(-50%);
   max-width: calc(100vw - 32px); background: #000; color: #fff; padding: 12px 16px; border-radius: 12px;

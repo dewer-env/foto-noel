@@ -244,10 +244,11 @@
   <div class="phases">
     <div class="phase done"><b>FASE 1 ✓</b>Servidor base</div>
     <div class="phase done"><b>FASE 2 ✓</b>Página do iPhone</div>
-    <div class="phase next"><b>FASE 3 · em teste</b>Vitrine do iPad</div>
-    <div class="phase next"><b>FASE 4 · em teste</b>Balcão</div>
-    <div class="phase next"><b>FASE 5 · em teste</b>Robustez</div>
-    <div class="phase"><b>FASE 6</b>Impressão e extras</div>
+    <div class="phase done"><b>FASE 3 ✓</b>Vitrine do iPad</div>
+    <div class="phase done"><b>FASE 4 ✓</b>Balcão</div>
+    <div class="phase done"><b>FASE 5 ✓</b>Robustez</div>
+    <div class="phase next"><b>FASE 6 · básico feito</b>Impressão e extras</div>
+    <div class="phase next"><b>ETAPA FINAL</b>Todos os testes que faltam</div>
   </div>
 
   <div class="oneliner">
@@ -784,7 +785,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
     <p style="margin-top:0"><b>Sim.</b> É a arquitetura comum nesse tipo de evento, não depende de nada externo, e a parte mais delicada (não perder foto) já está resolvida e testada. Os riscos que sobram são de <b>operação e hardware</b>, não de código:</p>
     <div class="tbl-wrap"><table class="tbl">
       <tr><th>#</th><th>Ponto de atenção</th><th>Ação</th></tr>
-      <tr><td>1</td><td><b>Impressora indefinida</b>: velocidade e custo por cópia são o gargalo do negócio</td><td>Escolher e medir a velocidade real cedo, mesmo antes da Fase 6</td></tr>
+      <tr><td>1</td><td><b>Impressora Kodak 305</b>: driver a confirmar no sistema do evento; velocidade e custo por cópia são o gargalo do negócio</td><td>Instalar o driver e medir a velocidade real na etapa final de testes</td></tr>
       <tr><td>2</td><td>Fotos da página não vão para o rolo da câmera</td><td>Wi-Fi bom e fila sempre perto de 0</td></tr>
       <tr><td>3</td><td>Computador é ponto único de falha</td><td>Backup para HD externo (<b>pendente</b>) e no-break</td></tr>
       <tr><td>4</td><td>Toque extra em "Usar foto" pode atrapalhar o ritmo</td><td>Testar com o fotógrafo real; se atrapalhar, app nativo</td></tr>
@@ -808,7 +809,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
     <div class="card decision"><h3>1️⃣ Família nº 1 automática</h3><p>O iPhone sempre tem uma família válida, mesmo que ninguém aperte "Nova família".</p></div>
     <div class="card decision"><h3>📷 Câmera nativa via &lt;input&gt;</h3><p>Resolução total e funciona em http. Custo: o toque extra em "Usar foto" (o app nativo resolveria).</p></div>
     <div class="card decision"><h3>📱 Câmera horizontal e simples</h3><p>A maioria das fotos é na horizontal, então ela é o padrão. Dois botões meio a meio, "Nova família" (com o código) e "Tirar foto", e uma faixa com as últimas fotos, que confirmam o envio com ⏳ ou ✓. Sem galeria.</p></div>
-    <div class="card decision"><h3>🧾 Balcão sem seleção por enquanto</h3><p>Selecionar várias fotos e escolher cópias só faz sentido com impressão, então isso fica para a Fase 6. Até lá, "Abrir original" permite imprimir manualmente.</p></div>
+    <div class="card decision"><h3>🧾 Balcão sem seleção por enquanto</h3><p>Por enquanto, imprime uma foto por vez pelo botão "Imprimir", com as cópias escolhidas no diálogo do sistema. Selecionar várias fotos fica para um próximo passo da Fase 6.</p></div>
     <div class="card decision"><h3>🚫 Nova família só com conexão</h3><p>Criar família exige o servidor (é ele quem numera). Sem conexão o botão fica desativado; as fotos continuam na família atual.</p></div>
     <div class="card decision"><h3>⚠️ Erro definitivo não some</h3><p>Foto recusada pelo servidor fica no iPhone em "Fotos com erro" até alguém tentar de novo ou descartar (com confirmação).</p></div>
     <div class="card decision"><h3>📂 Uma pasta por família</h3><p><code>fotos/&lt;dia&gt;/familia-047/</code> com nomes legíveis: plano B se o balcão falhar. Usa o dia <i>da família</i>, para quem atravessa a meia-noite não se misturar com a 47 do dia seguinte.</p></div>
@@ -816,7 +817,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
     <div class="card decision"><h3>🖱️ Dois cliques nos dois sistemas</h3><p>O supervisor é escrito em Node e serve para Mac e Windows; os arquivos de início só o chamam. Assim, o sistema do evento pode ser decidido depois. Iniciar ao ligar o computador fica para quando ele for definido.</p></div>
     <div class="card decision"><h3>💾 Backup pendente</h3><p>Fica para o futuro, junto com o HD externo. Até lá, se o disco do computador falhar, as fotos se perdem.</p></div>
     <div class="card decision"><h3>🌐 Um endereço só</h3><p>A fila pertence ao endereço (IP vs. .local, Safari vs. tela de início). No evento: sempre o mesmo, de preferência o IP fixo.</p></div>
-    <div class="card decision"><h3>🖨️ Impressão adiada</h3><p>Prioridade é a foto chegar. Impressora e sistema ainda indefinidos: vai para a Fase 6.</p></div>
+    <div class="card decision"><h3>🖨️ Impressão aos poucos</h3><p>A impressora é a Kodak 305. O básico usa o diálogo de impressão do sistema, que funciona igual no Mac e no Windows. Imprimir direto pelo servidor fica para depois de escolher o sistema.</p></div>
   </div>
 </section>
 
@@ -829,7 +830,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
 
 </main>
 
-<footer>Guia do projeto · atualizado na Fase 5 (em teste) · abre direto do disco, sem internet</footer>
+<footer>Guia do projeto · atualizado na Fase 5 (testes na etapa final) · abre direto do disco, sem internet</footer>
 
 <script>
 /* ---------- explorador de arquivos ---------- */
@@ -1013,7 +1014,7 @@ const FILES = {
     uses: ['scripts/supervisor.js'],
   },
   'Iniciar no Windows.bat': {
-    role: 'Dois cliques para ligar o sistema no Windows. Ainda precisa ser testado num PC Windows.',
+    role: 'Dois cliques para ligar o sistema no Windows. O funcionamento básico já foi testado; o reinício automático, a tela sempre ligada e os logs ficam para a etapa final de testes.',
     does: ['Avisa se faltar o Node ou as dependências.', 'Chama o supervisor. Para encerrar: Ctrl+C na janela.'],
     uses: ['scripts/supervisor.js'],
   },
@@ -1051,7 +1052,7 @@ const FILES = {
   },
   'public/balcao/index.html': {
     role: 'A página do operador (http://IP:3000/balcao/), no computador central.',
-    does: ['Topo com busca pelo código, seletor de dia, totais e conexão.', 'Lista de famílias com as miniaturas.', 'Tela de foto ampliada, com "Ocultar da vitrine" e "Abrir original".'],
+    does: ['Topo com busca pelo código, seletor de dia, totais e conexão.', 'Lista de famílias com as miniaturas.', 'Tela de foto ampliada, com "Ocultar da vitrine", "Abrir original" e "Imprimir".'],
     uses: ['public/balcao/balcao.js', 'public/balcao/balcao.css'],
   },
   'public/balcao/balcao.js': {
@@ -1163,7 +1164,8 @@ const FLOWS = {
       [C, 'cliente', 'Diz ao operador: "sou a 47".'],
       [C, 'balcao.js', 'O operador digita 47 e a tela mostra só essa família, no dia escolhido.'],
       [C, 'balcao.js', 'Um clique amplia a foto, usando <code>/api/photos/:id/display</code>.'],
-      [OK, 'Abrir original', 'Abre o arquivo original no navegador, para imprimir com Cmd/Ctrl+P.'],
+      [OK, 'Abrir original', 'Abre o arquivo original no navegador.'],
+      [OK, 'Imprimir', 'Abre o diálogo de impressão do sistema com a foto inteira na folha. Impressora, papel e cópias são escolhidos nele.'],
       [W, 'Ocultar da vitrine', '<code>PATCH /api/photos/:id</code>; o evento <code>photo.updated</code> tira a foto do iPad na hora.'],
     ],
     note: 'Os códigos recomeçam a cada dia. Para uma família de outro dia, troque o dia no topo antes de buscar.',

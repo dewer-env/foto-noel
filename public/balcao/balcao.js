@@ -16,6 +16,7 @@ const state = {
   loaded: false,
   loadFailed: false,
   hiding: false,
+  printing: false,
 };
 
 function localDay(date = new Date()) {
@@ -107,6 +108,53 @@ async function toggleHidden() {
   } finally {
     state.hiding = false;
     render();
+  }
+}
+
+/* ---------------- impressão ---------------- */
+
+// Original em HEIC não abre no Chrome nem no Edge; nesse caso imprime a versão reduzida.
+async function loadForPrint(photo) {
+  for (const version of ['original', 'display']) {
+    const img = new Image();
+    img.src = `/api/photos/${photo.id}/${version}`;
+    try {
+      await img.decode();
+      return { img, reduced: version !== 'original' };
+    } catch {
+      // tenta a próxima versão
+    }
+  }
+  throw new Error('imagem indisponível');
+}
+
+// Abre o diálogo de impressão do sistema; impressora e papel são escolhidos nele.
+// Usa "contain" para nunca cortar ninguém da foto.
+async function printPhoto() {
+  const photo = state.photos.get(state.viewerId);
+  if (!photo || state.printing) return;
+  state.printing = true;
+  renderViewer();
+  try {
+    const { img, reduced } = await loadForPrint(photo);
+    if (reduced) toast('O original não abre neste navegador; imprimindo a versão reduzida.');
+    const orientation = img.naturalWidth >= img.naturalHeight ? 'landscape' : 'portrait';
+    const frame = $('printFrame');
+    await new Promise((resolve) => {
+      frame.onload = resolve;
+      frame.srcdoc = `<!doctype html><title>Família ${photo.code}</title><style>
+        @page { size: ${orientation}; margin: 0; }
+        html, body { margin: 0; height: 100%; background: #fff; }
+        img { display: block; width: 100%; height: 100%; object-fit: contain; }
+      </style><img src="${img.src}" alt="">`;
+    });
+    frame.contentWindow.focus();
+    frame.contentWindow.print();
+  } catch {
+    toast('Não foi possível preparar a impressão. Confira a conexão e tente de novo.');
+  } finally {
+    state.printing = false;
+    renderViewer();
   }
 }
 
@@ -285,6 +333,8 @@ function renderViewer() {
   $('viewerVisibility').classList.toggle('is-hidden', photo.hiddenFromDisplay);
   $('viewerHide').textContent = photo.hiddenFromDisplay ? 'Mostrar na vitrine' : 'Ocultar da vitrine';
   $('viewerHide').disabled = state.hiding;
+  $('viewerPrint').textContent = state.printing ? 'Preparando…' : 'Imprimir';
+  $('viewerPrint').disabled = state.printing;
 }
 
 /* ---------------- aviso ---------------- */
@@ -314,6 +364,7 @@ $('day').addEventListener('change', (e) => {
 
 $('viewerClose').addEventListener('click', closeViewer);
 $('viewerHide').addEventListener('click', toggleHidden);
+$('viewerPrint').addEventListener('click', printPhoto);
 $('viewerPrev').addEventListener('click', () => step(-1));
 $('viewerNext').addEventListener('click', () => step(1));
 $('viewerBody').addEventListener('click', (e) => {

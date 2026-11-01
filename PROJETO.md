@@ -215,10 +215,11 @@ Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que
 - [x] Página `/status`: fotos e famílias do dia, telas conectadas, espaço em disco.
 - [ ] **Pendente para o futuro:** backup de `data/` para HD externo (manual + a cada X min, sugestão: 10 min).
 - [ ] **Pendente para o futuro:** iniciar sozinho ao ligar o computador, depois de definir o sistema do evento.
-- [ ] **Teste de estresse:** 300+ fotos seguidas, Wi-Fi caindo no meio, Mac reiniciando.
+- *(Os testes que faltam estão na etapa final, seção 10.)*
 
 ### Fase 6 — Futuro
-- [ ] **Impressão:** `GET /api/printers`, `POST /api/photos/:id/print`, evento `print.queued`, seleção de foto(s), seletor de impressora e tamanho de papel no balcão, quantidade de cópias, marcar fotos já impressas (`print_count`). Mecanismo a definir quando a impressora e o sistema do computador forem escolhidos.
+- [x] **Impressão básica (Kodak 305):** botão "Imprimir" na foto ampliada do balcão. Abre o diálogo de impressão do sistema, com impressora, papel e cópias escolhidos nele. A foto entra inteira na folha, sem corte.
+- [ ] **Impressão, próximos passos:** imprimir direto pelo servidor (`GET /api/printers`, `POST /api/photos/:id/print`, evento `print.queued`), seleção de foto(s), seletor de impressora e tamanho de papel no balcão, quantidade de cópias, marcar fotos já impressas (`print_count`). Mecanismo a definir quando o sistema do computador for escolhido.
 - [ ] Moldura/arte de Natal (aplicada no servidor com `sharp`, mantendo o original).
 - [ ] Layout de impressão (várias fotos por folha, margens por tamanho de papel).
 - [ ] App nativo iOS (seção 9).
@@ -252,36 +253,56 @@ Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que
 
 ---
 
-## 10. Checklist de teste antes do evento
+## 10. Etapa final de testes
 
-### Pendências para concluir as Fases 3 e 4
-- [ ] **Vitrine (Fase 3):** fica algumas horas ligada, na tomada, sem travar, continua trocando as fotos e a tela não apaga.
-- [ ] **Balcão (Fase 4), busca:** digitar o código mostra só aquela família; um código inexistente mostra a mensagem; `Esc` limpa.
-- [ ] **Balcão (Fase 4), ocultar:** "Ocultar da vitrine" tira a foto do iPad na hora e "Mostrar na vitrine" traz de volta.
-- [ ] **Balcão (Fase 4), original:** "Abrir original" abre a foto na orientação certa e dá para imprimir ou salvar em PDF.
-- [ ] **Balcão (Fase 4), queda:** ao parar o servidor aparece o aviso; ao ligar de novo, o aviso some e as fotos perdidas aparecem.
+Todos os testes que faltam ficam aqui e serão feitos juntos, numa última etapa, depois de terminar o desenvolvimento. Nenhum deles impede avançar nas outras fases.
 
-### Pendências da Fase 5
+### Já testado
+- [x] **Windows, funcionamento básico:** o sistema rodou num PC Windows, com acesso pela rede local, e também funcionou com o Mac ligado ao mesmo tempo.
+- [x] **Mac, Fase 5:** dois cliques para iniciar, reinício após `kill -9`, logs, encerramento limpo e estresse de 15 fotos com o servidor derrubado no meio (nenhuma perdida ou duplicada).
+
+### 1. Balcão
+- [ ] **Busca:** digitar o código mostra só aquela família; um código inexistente mostra a mensagem; `Esc` limpa.
+- [ ] **Ocultar:** "Ocultar da vitrine" tira a foto do iPad na hora e "Mostrar na vitrine" traz de volta.
+- [ ] **Original:** "Abrir original" abre a foto na orientação certa e dá para imprimir ou salvar em PDF.
+- [ ] **Queda:** ao parar o servidor aparece o aviso; ao ligar de novo, o aviso some e as fotos perdidas aparecem.
+
+### 2. Robustez do computador
+- [ ] **Status:** a página `/status` mostra fotos e famílias do dia, telas conectadas e espaço em disco.
+- [ ] **Queda só do servidor no Windows:** com a janela aberta, encerrar apenas o processo da porta 3000 (comando abaixo). Ele deve voltar sozinho e o log deve registrar `servidor parou`. Fechar a janela, ao contrário, deve deixar tudo desligado.
+  `Get-NetTCPConnection -LocalPort 3000 -State Listen | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }`
+- [ ] **Servidor travado:** quando ele para de responder sem cair, o supervisor reinicia em cerca de 30 s.
+- [ ] **Computador acordado no Windows:** a tela não apaga. `powercfg /requests`, como administrador, mostra um processo `powershell` em DISPLAY e SYSTEM.
+- [ ] **Logs no Windows:** o arquivo do dia é gravado em `data\logs\`.
 - [ ] **Estresse completo:** `npm run estresse` com 300+ fotos, derrubando o Wi-Fi e reiniciando o computador no meio.
-- [ ] **Windows:** num PC Windows, rodar `npm install` e dar dois cliques em `Iniciar no Windows.bat`. Conferir se o balcão abre, se o servidor volta após ser encerrado à força, se a tela não apaga e se os logs são gravados.
-- [ ] **Firewall do Windows:** permitir o Node na rede privada e confirmar o acesso pelo iPhone e pelo iPad.
 
-### Evento completo
-
+### 3. Evento completo
+Fazer no computador escolhido para o evento.
 - [ ] Montar tudo **em casa com o roteador desconectado da internet**.
 - [ ] Tirar 50 fotos seguidas: todas chegam no iPad e no balcão, sem duplicata.
 - [ ] Desligar o Wi-Fi do iPhone no meio, tirar 5 fotos, religar: todas chegam.
-- [ ] Reiniciar o Mac no meio: iPhone segura a fila, iPad e balcão reconectam sozinhos.
-- [ ] Deixar a vitrine ligada por 8 h seguidas.
-- [ ] Imprimir na impressora real, no tamanho real de papel, conferindo corte e cores.
-- [ ] Backup para HD externo funcionando.
+- [ ] Reiniciar o computador no meio: iPhone segura a fila, iPad e balcão reconectam sozinhos.
+- [ ] Deixar a vitrine ligada por 8 h seguidas, na tomada: não trava, continua trocando as fotos e a tela não apaga.
+- [ ] Testar com o fotógrafo real, para decidir entre web e app nativo: o toque extra em "Usar foto" atrapalha o ritmo?
 - [ ] Bateria: iPhone e iPad aguentam o turno? (Levar carregadores/power bank.)
+
+### 4. Impressão na Kodak 305
+- [ ] **Driver:** instalar o driver da Kodak no computador do evento e confirmar que a impressora aparece no diálogo. O driver para Mac encontrado cita só o macOS 10.14, e o de Windows cita 7, 8 e 10; conferir a compatibilidade com o sistema real.
+- [ ] **Botão "Imprimir":** abre o diálogo com a foto certa, inteira, em uma folha só e sem margem, tanto na horizontal quanto na vertical. Testar no Chrome ou Edge.
+- [ ] **Papel real:** imprimir em 15x20 e 10x15, conferindo corte, cores e o tempo por cópia.
+- [ ] **Original em HEIC:** se a foto vier em HEIC, o botão avisa e imprime a versão reduzida; conferir se a qualidade é aceitável.
+
+### 5. Depende do que ainda será feito
+- [ ] Backup para HD externo funcionando (pendente da Fase 5).
+- [ ] Iniciar sozinho ao ligar o computador (pendente da Fase 5).
 
 ---
 
 ## 11. Decisões em aberto
 
-- [ ] Modelo da impressora e tamanho da foto (10x15, 15x20…).
+- [x] Modelo da impressora: Kodak 305.
+- [ ] Tamanho da foto. Sugestão: 15x20, que tem a mesma proporção 4:3 da câmera do iPhone; em 10x15 sobram faixas brancas, porque a foto não é cortada.
+- [ ] Computador do evento (Mac ou Windows). O driver da Kodak 305 passou a pesar nessa decisão: confirmar qual sistema ele suporta.
 - [ ] Quanto tempo a vitrine mostra cada foto nova, e quantas horas de histórico entram no slideshow.
 - [ ] Aviso de privacidade/LGPD no local (placa) e política de exclusão das fotos após o evento.
 - [ ] Web vs. nativo para o iPhone: decidir após os testes da Fase 2.
