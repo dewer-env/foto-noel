@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Balcão · Papai Noel</title>
+  <link rel="icon" href="/shared/icon-192.png">
+  <link rel="stylesheet" href="balcao.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">🎅 Balcão</div>
+    <label class="search">
+      <span>Família</span>
+      <input id="search" type="text" inputmode="numeric" autocomplete="off" placeholder="Digite o código" autofocus>
+    </label>
+    <label class="day">
+      <span>Dia</span>
+      <input id="day" type="date">
+    </label>
+    <div class="summary" id="summary"></div>
+    <div class="conn" id="conn" data-online="false"><span class="dot"></span><span id="connText">Conectando…</span></div>
+  </header>
+
+  <main>
+    <div id="families"></div>
+    <p class="empty" id="empty" hidden></p>
+  </main>
+
+  <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="viewerCode" hidden>
+    <div class="viewer-bar">
+      <div class="viewer-title">
+        <span>Família</span>
+        <strong id="viewerCode"></strong>
+        <span id="viewerInfo"></span>
+      </div>
+      <span class="visibility" id="viewerVisibility"></span>
+      <button class="btn" id="viewerHide" type="button"></button>
+      <a class="btn btn-primary" id="viewerOriginal" target="_blank" rel="noopener">Abrir original</a>
+      <button class="btn" id="viewerClose" type="button" aria-label="Fechar">✕</button>
+    </div>
+    <div class="viewer-body" id="viewerBody">
+      <button class="nav" id="viewerPrev" type="button" aria-label="Foto anterior">‹</button>
+      <img id="viewerImage" alt="">
+      <button class="nav" id="viewerNext" type="button" aria-label="Próxima foto">›</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script type="module" src="balcao.js"></script>
+</body>
+</html>

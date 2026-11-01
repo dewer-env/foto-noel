@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Foto com Papai Noel</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #111; color: #eee; margin: 0; padding: 24px; }
+    h1 { margin-top: 0; }
+    a { color: #f66; }
+    pre { background: #000; padding: 12px; border-radius: 8px; max-height: 50vh; overflow: auto; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>🎅 Foto com Papai Noel</h1>
+  <p>Servidor no ar. Páginas: <a href="/camera/">/camera</a> · <a href="/vitrine/">/vitrine</a> · <a href="/balcao/">/balcao</a> · <a href="/status/">/status</a></p>
+  <p>Eventos em tempo real (<span id="status">conectando…</span>):</p>
+  <pre id="log"></pre>
+  <script>
+    const log = document.getElementById('log');
+    const status = document.getElementById('status');
+    function connect() {
+      const ws = new WebSocket(`ws://${location.host}/ws`);
+      ws.onopen = () => { status.textContent = 'conectado'; };
+      ws.onmessage = (e) => { log.textContent = `${new Date().toLocaleTimeString()} ${e.data}\n` + log.textContent; };
+      ws.onclose = () => { status.textContent = 'desconectado, tentando de novo…'; setTimeout(connect, 2000); };
+    }
+    connect();
+  </script>
+</body>
+</html>

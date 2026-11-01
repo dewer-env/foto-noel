@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Status · Papai Noel</title>
+  <link rel="icon" href="/shared/icon-192.png">
+  <style>
+    :root { color-scheme: dark; --bg: #14110f; --surface: #221e1b; --border: #3a342f; --text: #f3eee8; --muted: #a39b91; --green: #4cc27a; --red: #ef6a60; --amber: #e7b04b; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; background: var(--bg); color: var(--text); font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    h1 { margin: 0 0 4px; font-size: 26px; }
+    #state { margin: 0 0 18px; font-weight: 700; color: var(--green); }
+    #state.bad { color: var(--red); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+    .card b { display: block; font-size: 34px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .card span { color: var(--muted); font-size: 14px; }
+    .card.warn b { color: var(--amber); }
+    .card.alert b { color: var(--red); }
+    nav { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 14px; }
+    a { color: var(--text); }
+  </style>
+</head>
+<body>
+  <h1>🎅 Status do sistema</h1>
+  <p id="state" role="status">Carregando…</p>
+  <div class="grid">
+    <div class="card"><b id="photos">–</b><span>fotos hoje</span></div>
+    <div class="card"><b id="families">–</b><span>famílias hoje</span></div>
+    <div class="card"><b id="lastPhoto">–</b><span>última foto</span></div>
+    <div class="card"><b id="clients">–</b><span>telas conectadas</span></div>
+    <div class="card" id="diskCard"><b id="disk">–</b><span id="diskInfo">livres em disco</span></div>
+    <div class="card"><b id="uptime">–</b><span>servidor no ar</span></div>
+  </div>
+  <nav>
+    <a href="/balcao/">Balcão</a>
+    <a href="/vitrine/">Vitrine</a>
+    <a href="/camera/">Câmera</a>
+  </nav>
+
+  <script>
+    const REFRESH_MS = 5000;
+    const GB = 1024 ** 3;
+    const DISK_WARN_BYTES = 10 * GB;  // cerca de 1 mil fotos de 10 MB
+    const DISK_ALERT_BYTES = 2 * GB;
+
+    const $ = (id) => document.getElementById(id);
+
+    function duration(seconds) {
+      if (seconds < 60) return `${seconds} s`;
+      if (seconds < 3600) return `${Math.floor(seconds / 60)} min`;
+      return `${Math.floor(seconds / 3600)} h ${Math.floor((seconds % 3600) / 60)} min`;
+    }
+
+    function render(status) {
+      const { today, disk } = status;
+      $('state').textContent = 'Servidor no ar';
+      $('state').classList.remove('bad');
+      $('photos').textContent = today.photos;
+      $('families').textContent = today.families;
+      $('lastPhoto').textContent = today.lastPhotoAt
+        ? new Date(today.lastPhotoAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        : '–';
+      $('clients').textContent = status.connectedClients;
+      $('disk').textContent = `${(disk.freeBytes / GB).toFixed(1)} GB`;
+      $('diskInfo').textContent = disk.freeBytes < DISK_ALERT_BYTES
+        ? 'livres em disco: libere espaço agora'
+        : `livres em disco, de ${(disk.totalBytes / GB).toFixed(0)} GB`;
+      $('diskCard').classList.toggle('warn', disk.freeBytes < DISK_WARN_BYTES && disk.freeBytes >= DISK_ALERT_BYTES);
+      $('diskCard').classList.toggle('alert', disk.freeBytes < DISK_ALERT_BYTES);
+      $('uptime').textContent = duration(status.uptimeSeconds);
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch('/api/status', { cache: 'no-store', signal: AbortSignal.timeout(4000) });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        render(await res.json());
+      } catch {
+        $('state').textContent = 'Sem resposta do servidor. Os dados abaixo podem estar desatualizados.';
+        $('state').classList.add('bad');
+      }
+    }
+
+    refresh();
+    setInterval(refresh, REFRESH_MS);
+  </script>
+</body>
+</html>

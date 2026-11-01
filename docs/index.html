@@ -1,0 +1,1345 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guia Foto Noel</title>
+<style>
+  :root {
+    --bg: #f7f5f2;
+    --surface: #ffffff;
+    --surface-2: #f0ede8;
+    --text: #1f1d1a;
+    --muted: #6b665e;
+    --border: #e2ddd5;
+    --red: #b8322a;
+    --red-soft: #f8e4e1;
+    --green: #2f7a4b;
+    --green-soft: #e1f1e6;
+    --blue: #2c5f9e;
+    --blue-soft: #e2ebf7;
+    --amber: #9a6a12;
+    --amber-soft: #f6ecd6;
+    --purple: #6b46a3;
+    --purple-soft: #ece5f6;
+    --code-bg: #f3f0eb;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151413;
+      --surface: #1e1c1a;
+      --surface-2: #272522;
+      --text: #ece8e2;
+      --muted: #a39d93;
+      --border: #35322e;
+      --red: #ef7a70;
+      --red-soft: #3a2220;
+      --green: #6cc48f;
+      --green-soft: #1d3326;
+      --blue: #7fb0ec;
+      --blue-soft: #1e2b3d;
+      --amber: #e3b45a;
+      --amber-soft: #382d18;
+      --purple: #b89be6;
+      --purple-soft: #2c2439;
+      --code-bg: #171614;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--blue); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; }
+  pre code { background: none; padding: 0; }
+
+  /* topo */
+  header.top {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .top-inner { max-width: 1100px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 16px; align-items: center; }
+  .brand { font-weight: 700; white-space: nowrap; }
+  nav.toc { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  nav.toc::-webkit-scrollbar { display: none; }
+  nav.toc a {
+    text-decoration: none; color: var(--muted); font-size: 14px; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  nav.toc a:hover, nav.toc a.active { background: var(--surface-2); color: var(--text); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 0 16px 80px; }
+  section { padding-top: 40px; }
+  h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.15; margin: 32px 0 8px; }
+  h2 { font-size: 26px; margin: 0 0 4px; }
+  h3 { font-size: 18px; margin: 0 0 6px; }
+  .lead { color: var(--muted); font-size: 18px; max-width: 760px; margin: 0; }
+  .sec-sub { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; box-shadow: var(--shadow); }
+
+  /* progresso das fases */
+  .phases { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 24px 0 0; }
+  .phase { border-radius: 10px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); font-size: 13px; }
+  .phase b { display: block; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .phase.done { background: var(--green-soft); border-color: transparent; }
+  .phase.done b { color: var(--green); }
+  .phase.next { border: 2px dashed var(--amber); }
+  .phase.next b { color: var(--amber); }
+  @media (max-width: 720px) { .phases { grid-template-columns: repeat(3, 1fr); } }
+
+  .oneliner { margin-top: 20px; padding: 14px 18px; border-left: 4px solid var(--red); background: var(--surface); border-radius: 0 10px 10px 0; }
+
+  /* diagrama */
+  .diagram { width: 100%; height: auto; display: block; }
+  .diagram text { font-family: inherit; fill: var(--text); }
+  .diagram .sub { fill: var(--muted); font-size: 11px; }
+  .diagram .box { fill: var(--surface); stroke: var(--border); stroke-width: 1.5; }
+  .diagram .server { fill: var(--surface-2); stroke: var(--border); stroke-dasharray: 6 4; }
+  .diagram .client { fill: var(--blue-soft); stroke: var(--blue); }
+  .diagram .disk { fill: var(--amber-soft); stroke: var(--amber); }
+  .diagram .ws { fill: var(--purple-soft); stroke: var(--purple); }
+  .diagram .entry { fill: var(--red-soft); stroke: var(--red); }
+  .diagram .arrow { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+  .diagram .arrow.http { stroke: var(--blue); }
+  .diagram .arrow.wsl { stroke: var(--purple); stroke-dasharray: 5 4; }
+  .diagram .arrow.diskl { stroke: var(--amber); }
+  .diagram .lbl { font-size: 11px; fill: var(--muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); margin-top: 10px; }
+  .legend span::before { content: ""; display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 6px; border-radius: 2px; background: var(--c); }
+
+  /* conceitos */
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  details.concept { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  details.concept summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+  details.concept summary::-webkit-details-marker { display: none; }
+  details.concept .ico { font-size: 22px; line-height: 1; padding-top: 2px; }
+  details.concept .t { font-weight: 650; display: block; }
+  details.concept .s { color: var(--muted); font-size: 14px; display: block; }
+  details.concept .body { padding: 0 16px 14px; font-size: 15px; }
+  details.concept .body p { margin: 0 0 8px; }
+  details.concept[open] { grid-column: 1 / -1; }
+  details.concept.key { border: 2px solid var(--red); }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; background: var(--red-soft); color: var(--red); margin-left: 6px; vertical-align: 2px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .tbl th, .tbl td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .tbl th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  .tbl-wrap { overflow-x: auto; }
+
+  /* explorador de arquivos */
+  .explorer { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 800px) { .explorer { grid-template-columns: 1fr; } }
+  .tree { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; padding: 10px; }
+  .tree button {
+    display: block; width: 100%; text-align: left; background: none; border: 0; color: var(--text);
+    font: inherit; padding: 5px 8px; border-radius: 6px; cursor: pointer;
+  }
+  .tree button:hover { background: var(--surface-2); }
+  .tree button.sel { background: var(--red-soft); color: var(--red); font-weight: 700; }
+  .tree .dir { color: var(--muted); padding: 6px 8px 2px; }
+  .tree .ind { padding-left: 22px; }
+  .tree .ind2 { padding-left: 40px; }
+  .tree .ghost { color: var(--muted); padding: 5px 8px; }
+  .detail h3 { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 17px; }
+  .detail .role { color: var(--muted); margin: 0 0 12px; }
+  .detail ul { padding-left: 20px; margin: 6px 0 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+  .chip { font-size: 12px; font-family: ui-monospace, Menlo, Consolas, monospace; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); }
+  .chip.link { cursor: pointer; }
+  .chip.link:hover { border-color: var(--red); }
+  .detail .label { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+
+  /* fluxos */
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tabs button {
+    font: inherit; font-size: 14px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer;
+  }
+  .tabs button.sel { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .steps li { position: relative; padding: 0 0 18px 48px; counter-increment: s; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--surface-2); border: 1px solid var(--border); display: grid; place-items: center; font-size: 13px; font-weight: 700;
+  }
+  .steps li::after { content: ""; position: absolute; left: 15px; top: 32px; bottom: 2px; width: 1px; background: var(--border); }
+  .steps li:last-child::after { display: none; }
+  .actor { display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 6px; margin-right: 6px; }
+  .a-client { background: var(--blue-soft); color: var(--blue); }
+  .a-server { background: var(--red-soft); color: var(--red); }
+  .a-disk { background: var(--amber-soft); color: var(--amber); }
+  .a-ws { background: var(--purple-soft); color: var(--purple); }
+  .a-ok { background: var(--green-soft); color: var(--green); }
+  .flow-note { margin-top: 4px; color: var(--muted); font-size: 14px; }
+
+  /* API */
+  .m { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 5px; }
+  .m.GET { background: var(--green-soft); color: var(--green); }
+  .m.POST { background: var(--blue-soft); color: var(--blue); }
+  .m.PATCH { background: var(--amber-soft); color: var(--amber); }
+  .ev { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--purple); }
+
+  /* dados */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .two { grid-template-columns: 1fr; } }
+
+  /* comandos */
+  .cmd { display: flex; align-items: stretch; gap: 0; margin: 8px 0; }
+  .cmd pre { margin: 0; flex: 1; border-radius: 8px 0 0 8px; }
+  .cmd button {
+    font: inherit; font-size: 13px; border: 1px solid var(--border); border-left: 0; border-radius: 0 8px 8px 0;
+    background: var(--surface); color: var(--muted); padding: 0 12px; cursor: pointer;
+  }
+  .cmd button:hover { color: var(--text); }
+  .cmd-desc { font-size: 14px; color: var(--muted); margin: 14px 0 0; }
+
+  /* decisões */
+  .decisions { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .decision h3 { font-size: 16px; }
+  .decision p { margin: 0; color: var(--muted); font-size: 14px; }
+
+  /* glossário */
+  .search { width: 100%; max-width: 420px; font: inherit; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); margin-bottom: 14px; }
+  .gloss { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+  .gloss div { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+  .gloss b { display: block; }
+  .gloss span { color: var(--muted); }
+
+  footer { color: var(--muted); font-size: 13px; text-align: center; padding: 30px 16px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">🎅 Foto Noel</div>
+    <nav class="toc" id="toc">
+      <a href="#visao">Visão geral</a>
+      <a href="#conceitos">Conceitos</a>
+      <a href="#arquivos">Arquivos</a>
+      <a href="#fluxos">Fluxos</a>
+      <a href="#dados">Dados</a>
+      <a href="#api">API</a>
+      <a href="#rodar">Rodar</a>
+      <a href="#operacao">Operação</a>
+      <a href="#decisoes">Decisões</a>
+      <a href="#glossario">Glossário</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ VISÃO GERAL ============ -->
+<section id="visao">
+  <h1>Guia do projeto</h1>
+  <p class="lead">O <a href="../PROJETO.md">PROJETO.md</a> diz <b>o que</b> vamos construir. Esta página mostra <b>o que já existe</b>, como as peças se conectam e os conceitos por trás de cada uma.</p>
+
+  <div class="phases">
+    <div class="phase done"><b>FASE 1 ✓</b>Servidor base</div>
+    <div class="phase done"><b>FASE 2 ✓</b>Página do iPhone</div>
+    <div class="phase next"><b>FASE 3 · em teste</b>Vitrine do iPad</div>
+    <div class="phase next"><b>FASE 4 · em teste</b>Balcão</div>
+    <div class="phase next"><b>FASE 5 · em teste</b>Robustez</div>
+    <div class="phase"><b>FASE 6</b>Impressão e extras</div>
+  </div>
+
+  <div class="oneliner">
+    <b>A ideia em uma frase:</b> o iPhone <b>envia</b> a foto por HTTP; o servidor <b>guarda</b> (arquivo + banco), <b>gera versões menores</b> e <b>avisa</b> por WebSocket todo mundo que estiver escutando.
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <svg class="diagram" viewBox="0 0 900 360" role="img" aria-label="Diagrama: iPhone envia para o servidor, que grava no disco e avisa iPad e balcão">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/>
+        </marker>
+      </defs>
+
+      <!-- servidor -->
+      <rect class="server" x="230" y="14" width="440" height="330" rx="14"/>
+      <text x="246" y="38" font-weight="700" font-size="13">Servidor Node.js · porta 3000</text>
+
+      <rect class="box entry" x="250" y="52" width="400" height="44" rx="8"/>
+      <text x="450" y="72" text-anchor="middle" font-weight="700" font-size="13">index.js</text>
+      <text x="450" y="88" text-anchor="middle" class="sub">a portaria: recebe o pedido e manda para a rota certa</text>
+
+      <rect class="box" x="250" y="120" width="180" height="44" rx="8"/>
+      <text x="340" y="140" text-anchor="middle" font-weight="600" font-size="13">routes/sessions.js</text>
+      <text x="340" y="156" text-anchor="middle" class="sub">famílias</text>
+
+      <rect class="box" x="460" y="120" width="180" height="44" rx="8"/>
+      <text x="550" y="140" text-anchor="middle" font-weight="600" font-size="13">routes/photos.js</text>
+      <text x="550" y="156" text-anchor="middle" class="sub">upload, lista, arquivos</text>
+
+      <rect class="box" x="250" y="200" width="180" height="44" rx="8"/>
+      <text x="340" y="220" text-anchor="middle" font-weight="600" font-size="13">db.js</text>
+      <text x="340" y="236" text-anchor="middle" class="sub">lê e grava no banco</text>
+
+      <rect class="box" x="460" y="200" width="180" height="44" rx="8"/>
+      <text x="550" y="220" text-anchor="middle" font-weight="600" font-size="13">images.js</text>
+      <text x="550" y="236" text-anchor="middle" class="sub">gira, reduz, converte</text>
+
+      <rect class="box ws" x="250" y="284" width="390" height="44" rx="8"/>
+      <text x="445" y="304" text-anchor="middle" font-weight="600" font-size="13">events.js</text>
+      <text x="445" y="320" text-anchor="middle" class="sub">WebSocket /ws: avisa todos os conectados</text>
+
+      <!-- clientes -->
+      <rect class="box client" x="16" y="52" width="170" height="60" rx="10"/>
+      <text x="101" y="78" text-anchor="middle" font-weight="700" font-size="13">📱 iPhone / curl</text>
+      <text x="101" y="96" text-anchor="middle" class="sub">envia a foto</text>
+
+      <rect class="box client" x="16" y="270" width="170" height="60" rx="10"/>
+      <text x="101" y="296" text-anchor="middle" font-weight="700" font-size="13">🖥️ iPad · Balcão</text>
+      <text x="101" y="314" text-anchor="middle" class="sub">escutam em tempo real</text>
+
+      <!-- disco -->
+      <rect class="box disk" x="712" y="120" width="172" height="124" rx="10"/>
+      <text x="798" y="146" text-anchor="middle" font-weight="700" font-size="13">💾 data/</text>
+      <text x="798" y="172" text-anchor="middle" class="sub">db.sqlite</text>
+      <text x="798" y="190" text-anchor="middle" class="sub">fotos/AAAA-MM-DD/</text>
+      <text x="798" y="208" text-anchor="middle" class="sub">original · display · thumb</text>
+
+      <!-- setas -->
+      <path class="arrow http" d="M186,82 L248,74" marker-end="url(#ah)"/>
+      <text x="196" y="66" class="lbl">HTTP</text>
+      <path class="arrow" d="M340,96 L340,118" marker-end="url(#ah)"/>
+      <path class="arrow" d="M550,96 L550,118" marker-end="url(#ah)"/>
+      <path class="arrow" d="M340,164 L340,198" marker-end="url(#ah)"/>
+      <path class="arrow" d="M478,164 L432,206" marker-end="url(#ah)"/>
+      <path class="arrow" d="M550,164 L550,198" marker-end="url(#ah)"/>
+      <path class="arrow diskl" d="M640,142 L710,142" marker-end="url(#ah)"/>
+      <text x="652" y="136" class="lbl">original</text>
+      <path class="arrow diskl" d="M640,226 L710,226" marker-end="url(#ah)"/>
+      <path class="arrow diskl" d="M340,244 L340,262 L798,262 L798,246" marker-end="url(#ah)"/>
+      <text x="690" y="276" class="lbl">SQL</text>
+      <path class="arrow wsl" d="M640,154 L656,154 L656,306 L642,306" marker-end="url(#ah)"/>
+      <path class="arrow wsl" d="M250,142 L240,142 L240,306 L248,306" marker-end="url(#ah)"/>
+      <path class="arrow wsl" d="M250,306 L188,300" marker-end="url(#ah)"/>
+      <text x="194" y="288" class="lbl">WS</text>
+    </svg>
+    <div class="legend">
+      <span style="--c: var(--blue)">pedido HTTP (cliente → servidor)</span>
+      <span style="--c: var(--muted)">chamada entre arquivos</span>
+      <span style="--c: var(--amber)">grava no disco</span>
+      <span style="--c: var(--purple)">aviso em tempo real (servidor → clientes)</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONCEITOS ============ -->
+<section id="conceitos">
+  <h2>Conceitos básicos</h2>
+  <p class="sec-sub">Clique num cartão para abrir. O de borda vermelha é o mais importante do projeto.</p>
+
+  <div class="grid">
+
+    <details class="concept">
+      <summary><span class="ico">📦</span><span><span class="t">Node.js, npm e package.json</span><span class="s">o que roda o código e de onde vêm os pacotes</span></span></summary>
+      <div class="body">
+        <p><b>Node.js</b> executa JavaScript fora do navegador: <code>node server/index.js</code> = "rode este arquivo".</p>
+        <p><b>npm</b> vem junto com o Node e baixa <b>pacotes</b> (código pronto feito por outras pessoas, como o <code>express</code>).</p>
+        <p><a href="../package.json">package.json</a> é a ficha do projeto:</p>
+        <ul>
+          <li><code>dependencies</code>: os pacotes usados. <code>npm install</code> lê a lista e baixa tudo em <code>node_modules/</code>.</li>
+          <li><code>scripts</code>: atalhos. <code>npm start</code> sobe o servidor; <code>npm run ws</code> roda o teste de eventos.</li>
+          <li><code>engines</code>: a versão mínima do Node (22.13, por causa do SQLite embutido).</li>
+        </ul>
+        <p><code>node_modules/</code> nunca se edita e pode ser apagada e recriada. O <code>package-lock.json</code> guarda as versões <i>exatas</i>, para instalar igual em outro computador.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🧩</span><span><span class="t">Módulos: require e module.exports</span><span class="s">como um arquivo usa o outro</span></span></summary>
+      <div class="body">
+<pre><code>// db.js exporta
+module.exports = { createSession, getCurrentSession };
+
+// sessions.js importa
+const db = require('../db');          // caminho = arquivo do projeto
+const express = require('express');   // nome solto = pacote do node_modules
+const fs = require('node:fs');        // "node:" = já vem com o Node</code></pre>
+        <p>O código "solto" de um módulo roda <b>uma vez só</b>, no primeiro <code>require</code>. Por isso o <code>db.js</code> abre o banco uma única vez, mesmo sendo usado por vários arquivos.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🌐</span><span><span class="t">Cliente, servidor, IP e porta</span><span class="s">como o iPhone acha o computador</span></span></summary>
+      <div class="body">
+        <p><b>Servidor</b> = programa que fica esperando pedidos. <b>Cliente</b> = quem pede (navegador, curl, iPhone).</p>
+        <p><b>IP</b> = endereço do computador na rede (ex.: <code>192.168.0.10</code>). <b>Porta</b> = qual programa dentro dele (o nosso é a <b>3000</b>).</p>
+        <p><code>localhost</code> = "este mesmo computador", só serve para testar nele mesmo. O servidor escuta em <code>0.0.0.0</code> ("aceite de qualquer rede"), e é isso que deixa o iPhone acessar <code>http://IP-do-computador:3000</code>.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">✉️</span><span><span class="t">HTTP: método, rota, status, corpo</span><span class="s">um pedido → uma resposta</span></span></summary>
+      <div class="body">
+        <div class="tbl-wrap"><table class="tbl">
+          <tr><th>Peça</th><th>Exemplo</th><th>Serve para</th></tr>
+          <tr><td>Método</td><td><span class="m GET">GET</span> ler · <span class="m POST">POST</span> criar · <span class="m PATCH">PATCH</span> alterar</td><td>a intenção</td></tr>
+          <tr><td>Rota</td><td><code>/api/photos/abc/thumb</code></td><td>qual recurso</td></tr>
+          <tr><td>Query</td><td><code>?since=…&amp;limit=50</code></td><td>filtros</td></tr>
+          <tr><td>Corpo</td><td>JSON ou formulário com arquivo</td><td>dados enviados</td></tr>
+          <tr><td>Status</td><td>200 ok · 201 criado · 400 pedido errado · 404 não existe · 413 grande demais · 422 imagem ilegível · 500 erro</td><td>o resultado</td></tr>
+        </table></div>
+        <p style="margin-top:10px"><b>JSON</b> é o formato de texto para trocar dados: <code>{ "id": "abc", "code": 47 }</code>. <b>API</b> é o conjunto de rotas que o servidor oferece; chamamos de "contrato" porque o app nativo futuro vai depender dela.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">📎</span><span><span class="t">multipart/form-data</span><span class="s">como uma foto viaja num pedido</span></span></summary>
+      <div class="body">
+        <p>JSON não carrega arquivo binário bem. Para mandar foto usamos o formato de <b>formulário multipart</b>: o pedido vai em "partes", uma com o arquivo (<code>file</code>) e outras com textos (<code>sessionId</code>, <code>clientPhotoId</code>).</p>
+        <p>É o que o <code>curl -F</code> faz. No servidor, quem entende esse formato é o pacote <b>multer</b>.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🚦</span><span><span class="t">Express: rotas e middleware</span><span class="s">como o servidor organiza os pedidos</span></span></summary>
+      <div class="body">
+<pre><code>app.get('/api/health', (req, res) =&gt; res.json({ ok: true }));
+//                        ↑ pedido  ↑ resposta</code></pre>
+        <p><b>Rota</b>: "quando chegar GET /api/health, rode esta função".</p>
+        <p><b>Middleware</b>: função que roda no meio do caminho, antes da rota final. <code>upload.single('file')</code> lê o arquivo e deixa em <code>req.file</code>; <code>express.json()</code> lê o JSON e deixa em <code>req.body</code>. O pedido passa por uma <b>fila de funções</b>, em ordem.</p>
+        <p><b>Router</b>: um mini-app montado num prefixo. <code>app.use('/api/photos', router)</code> faz o <code>router.get('/:id')</code> responder em <code>/api/photos/:id</code>. O <code>:id</code> é um parâmetro: <code>req.params.id</code>.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">⚡</span><span><span class="t">WebSocket</span><span class="s">por que o iPad recebe na hora</span></span></summary>
+      <div class="body">
+        <p>No HTTP é sempre o <b>cliente que pergunta</b>; o servidor não consegue "ligar" para o iPad. O <b>WebSocket</b> é uma conexão que <b>fica aberta</b> nos dois sentidos: o iPad conecta uma vez em <code>/ws</code> e o servidor empurra mensagens quando quiser.</p>
+        <ul>
+          <li><b>Broadcast</b>: mesma mensagem para todos os conectados.</li>
+          <li><b>Ping/pong</b>: a cada 30 s o servidor pergunta "está aí?"; quem não responde é desconectado.</li>
+          <li><b>Reconexão</b>: se cair, o cliente reconecta e busca o que perdeu com <code>GET /api/photos?since=…</code>. O WebSocket <b>avisa</b>; quem guarda a verdade é a API.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🗄️</span><span><span class="t">SQLite e SQL</span><span class="s">o banco de dados em um arquivo</span></span></summary>
+      <div class="body">
+        <p><b>SQLite</b> é um banco que vive num único arquivo (<code>data/db.sqlite</code>), sem instalar nada. Usamos o que vem no Node (<code>node:sqlite</code>). Os dados ficam em <b>tabelas</b>, como planilhas com regras.</p>
+<pre><code>CREATE TABLE ...                       -- cria tabela
+INSERT INTO photos (...) VALUES (...)  -- adiciona linha
+SELECT ... FROM photos WHERE id = ?    -- busca
+UPDATE photos SET ... WHERE id = ?     -- altera</code></pre>
+        <ul>
+          <li><code>PRIMARY KEY</code>: identifica a linha (o <code>id</code>).</li>
+          <li><code>UNIQUE</code>: o banco <b>recusa</b> valores repetidos (usado no <code>client_photo_id</code>).</li>
+          <li><code>REFERENCES</code>: <code>photos.session_id</code> tem que apontar para uma família que existe.</li>
+          <li><code>JOIN</code>: junta tabelas numa consulta (traz o <code>code</code> da família junto com a foto).</li>
+          <li><code>INDEX</code>: um sumário que deixa buscas rápidas.</li>
+          <li><b>Prepared statement</b> (<code>?</code>): mais rápido e <b>seguro</b>, porque um valor nunca vira comando (evita <i>SQL injection</i>).</li>
+          <li><b>WAL</b>: modo mais resistente a desligamentos e a leitura + escrita ao mesmo tempo.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🔑</span><span><span class="t">UUID</span><span class="s">identificadores sem combinar com ninguém</span></span></summary>
+      <div class="body">
+        <p>Um id aleatório como <code>3f2b9c1e-…</code>, gerado com <code>crypto.randomUUID()</code>. A chance de repetir é praticamente zero, então tanto o servidor quanto o iPhone podem gerar o seu sem perguntar a ninguém.</p>
+      </div>
+    </details>
+
+    <details class="concept key">
+      <summary><span class="ico">🛡️</span><span><span class="t">Idempotência <span class="badge">o mais importante</span></span><span class="s">por que nenhuma foto duplica</span></span></summary>
+      <div class="body">
+        <p><b>Idempotente</b> = fazer várias vezes dá o mesmo resultado que fazer uma vez.</p>
+        <p><b>O problema:</b> o iPhone envia, o servidor salva, mas a <b>resposta se perde</b> porque o Wi-Fi piscou. O iPhone acha que falhou e <b>reenvia</b>. Sem cuidado, a foto duplicaria.</p>
+        <p><b>A solução:</b> o iPhone cria um <code>clientPhotoId</code> <b>antes</b> de enviar e repete o mesmo em todo reenvio. O servidor:</p>
+        <ol>
+          <li>Já tem foto com esse id? → devolve o mesmo <code>id</code> (<b>200</b>), sem salvar de novo.</li>
+          <li>Está processando uma com esse id agora? → espera terminar e devolve o mesmo <code>id</code>.</li>
+          <li>É nova? → salva e devolve <code>id</code> novo (<b>201</b>).</li>
+        </ol>
+        <p>E o <code>UNIQUE</code> no banco é a última barreira.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">⏳</span><span><span class="t">async / await e Promise</span><span class="s">esperar sem travar</span></span></summary>
+      <div class="body">
+        <p>Ler arquivo e redimensionar imagem <b>demoram</b>. O Node não fica parado: enquanto uma foto é processada, atende outros pedidos.</p>
+        <ul>
+          <li><b>Promise</b> = "um resultado que vai chegar depois".</li>
+          <li><code>await</code> = "espere este resultado antes de seguir" (só dentro de função <code>async</code>).</li>
+          <li><code>Promise.all([a, b])</code> = faça os dois <b>ao mesmo tempo</b> (display e thumb em paralelo).</li>
+          <li><code>try { } catch (err) { }</code> = tente; se der erro, trate aqui. <code>finally</code> roda sempre.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🖼️</span><span><span class="t">EXIF, HEIC, display e thumb</span><span class="s">o que acontece com a imagem</span></span></summary>
+      <div class="body">
+        <p><b>EXIF</b>: dados escondidos na foto, incluindo a <b>orientação</b>. O iPhone grava "deitada" e anota "gire 90°"; se ninguém aplicar, fica torta. <code>sharp(...).rotate()</code> aplica de verdade.</p>
+        <p><b>HEIC</b>: formato padrão do iPhone; nem todo programa abre, então convertemos para JPEG.</p>
+        <p><b>sharp</b>: pacote muito rápido para redimensionar e converter.</p>
+        <p>Cada foto vira <b>3 arquivos</b>: <code>original</code> (intocado), <code>display</code> (até 2048 px, para mostrar grande) e <code>thumb</code> (até 400 px, para grades).</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">📡</span><span><span class="t">Bonjour / mDNS</span><span class="s">achar o servidor sem saber o IP</span></span></summary>
+      <div class="body">
+        <p>O servidor "anuncia" no Wi-Fi: "sou um <code>_papainoel._tcp</code> na porta 3000". O futuro app nativo do iPhone escuta e acha o servidor sozinho. Hoje ninguém usa; está pronto para o app nativo (seção 9 do PROJETO.md).</p>
+      </div>
+    </details>
+
+    <details class="concept key">
+      <summary><span class="ico">📥</span><span><span class="t">Fila offline no iPhone <span class="badge">fase 2</span></span><span class="s">IndexedDB: por que a foto não se perde sem Wi-Fi</span></span></summary>
+      <div class="body">
+        <p><b>IndexedDB</b> é um banco de dados <b>dentro do navegador</b>, guardado no próprio iPhone. Ao contrário de uma variável, ele sobrevive se a página for fechada ou o iPhone reiniciar.</p>
+        <p>Quando o fotógrafo tira uma foto, ela <b>primeiro vai para a fila</b> no IndexedDB, já com seu <code>clientPhotoId</code>. Só depois a página tenta enviar. A foto <b>só sai da fila quando o servidor responde 200/201</b>.</p>
+        <ul>
+          <li>Sem Wi-Fi? A foto espera na fila e a barra mostra quantas estão guardadas no iPhone.</li>
+          <li>A rede voltou? A fila é enviada sozinha, da mais antiga para a mais nova.</li>
+          <li>Caiu no meio do envio? Ela é reenviada com o mesmo <code>clientPhotoId</code>, e a idempotência do servidor evita duplicata.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🔁</span><span><span class="t">Backoff (novas tentativas)</span><span class="s">tentar de novo sem martelar a rede</span></span></summary>
+      <div class="body">
+        <p>Se o envio falha por rede, a página espera e tenta de novo: <b>1 s, 2 s, 4 s, 8 s… até 30 s</b> entre tentativas. Isso é <b>backoff exponencial</b>: não fica tentando 100 vezes por segundo enquanto o Wi-Fi está fora.</p>
+        <p>Assim que algo indica que a rede voltou (o teste de conexão a cada 5 s, o WebSocket reconectando, a tela voltando do segundo plano), a espera é cancelada e a fila sai <b>na hora</b>.</p>
+        <p>Erros <b>definitivos</b> (ex.: 422, imagem ilegível) não são repetidos sozinhos: a foto aparece em "Fotos com erro", com os botões Tentar e Descartar.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🔒</span><span><span class="t">http na rede local: o que não funciona</span><span class="s">"contexto seguro" e suas consequências</span></span></summary>
+      <div class="body">
+        <p>Algumas funções do navegador só existem em <b>contexto seguro</b> (<code>https</code> ou <code>localhost</code>). No iPhone acessamos <code>http://IP:3000</code>, então:</p>
+        <ul>
+          <li><b>Sem Service Worker</b>: a página <b>não abre do zero</b> com o servidor desligado. Uma vez aberta, a fila funciona normalmente. Regra no evento: <b>abra a página com o servidor ligado e não recarregue à toa</b>.</li>
+          <li><b>Sem <code>crypto.randomUUID()</code></b>: geramos o UUID com <code>crypto.getRandomValues</code> (<code>shared/uuid.js</code>).</li>
+        </ul>
+        <p>O IndexedDB pertence ao endereço: <code>http://192.168.0.10:3000</code> e <code>http://papainoel.local:3000</code> têm <b>filas separadas</b>. Use sempre o mesmo endereço, de preferência o IP fixo.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">📲</span><span><span class="t">PWA e "Adicionar à Tela de Início"</span><span class="s">a página com cara de app</span></span></summary>
+      <div class="body">
+        <p>O <b>manifest</b> (<code>camera/manifest.webmanifest</code>) e as tags <code>apple-mobile-web-app-*</code> dizem ao iPhone o nome, o ícone e que a página deve abrir <b>em tela cheia, sem a barra do Safari</b>.</p>
+        <p>O ícone é desenhado em SVG (<code>shared/icon.svg</code>), e o servidor gera os PNGs que o iPhone exige (<code>server/icons.js</code>).</p>
+        <p>Atenção: o app da tela de início tem <b>armazenamento separado</b> do Safari. Escolha um dos dois e use sempre o mesmo.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🖥️</span><span><span class="t">Como a vitrine decide o que mostrar <span class="badge">fase 3</span></span><span class="s">prioridades, tempos e pré-carregamento</span></span></summary>
+      <div class="body">
+        <ol>
+          <li><b>A última foto fica na tela:</b> uma foto nova tira o slideshow na hora e fica 1 minuto. Se outra foto nova já estiver esperando, a atual fica só 2,5 s, para uma sequência não criar atraso.</li>
+          <li><b>1 minuto sem foto nova:</b> slideshow embaralhado das últimas 2 horas, 6 s por foto, até a próxima foto chegar.</li>
+          <li><b>Sem nenhuma foto:</b> tela de espera. A neve e o fundo vermelho em degradê ficam sempre na página.</li>
+        </ol>
+        <p><b>Pré-carregamento:</b> a imagem é baixada por inteiro antes de entrar em cena, com transição suave, então não pisca. Se travar, desiste em 15 s e segue para a próxima.</p>
+        <p><b>Ocultar da vitrine:</b> a foto sai da tela na hora, mesmo se estiver sendo exibida (pedido do cliente / LGPD).</p>
+        <p><b>Sem Wake Lock:</b> essa função que mantém a tela ligada exige contexto seguro, então não existe em http. No iPad, use <b>Bloqueio Automático: Nunca</b>.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">🧱</span><span><span class="t">Módulos no navegador</span><span class="s">import / export nas páginas</span></span></summary>
+      <div class="body">
+        <p>No servidor usamos <code>require</code>; no navegador usamos <code>&lt;script type="module"&gt;</code> com <code>import</code>/<code>export</code>, o formato padrão moderno:</p>
+<pre><code>// shared/uuid.js
+export function uuid() { ... }
+
+// camera/camera.js
+import { uuid } from '../shared/uuid.js';</code></pre>
+        <p>A pasta <code>public/shared/</code> guarda o que câmera, vitrine e balcão vão reutilizar.</p>
+      </div>
+    </details>
+
+    <details class="concept">
+      <summary><span class="ico">⚙️</span><span><span class="t">Variáveis de ambiente</span><span class="s">configurar sem mexer no código</span></span></summary>
+      <div class="body">
+        <p>Valores passados na hora de rodar. <code>PORT=4000 npm start</code> sobe na porta 4000. No código aparecem como <code>process.env.PORT</code>. Também existe <code>DATA_DIR</code>, para guardar os dados em outra pasta.</p>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<!-- ============ ARQUIVOS ============ -->
+<section id="arquivos">
+  <h2>Arquivos</h2>
+  <p class="sec-sub">Clique num arquivo para ver o que ele faz, de quem depende e quem depende dele.</p>
+
+  <div class="explorer">
+    <div class="card tree" id="tree">
+      <div class="dir">foto-noel/</div>
+      <button class="ind" data-f="PROJETO.md">PROJETO.md</button>
+      <button class="ind" data-f="package.json">package.json</button>
+      <button class="ind" data-f=".gitignore">.gitignore</button>
+      <button class="ind" data-f="Iniciar no Mac.command">Iniciar no Mac.command</button>
+      <button class="ind" data-f="Iniciar no Windows.bat">Iniciar no Windows.bat</button>
+      <div class="dir ind">server/</div>
+      <button class="ind2" data-f="server/index.js">index.js ★</button>
+      <button class="ind2" data-f="server/config.js">config.js</button>
+      <button class="ind2" data-f="server/db.js">db.js</button>
+      <button class="ind2" data-f="server/events.js">events.js</button>
+      <button class="ind2" data-f="server/images.js">images.js</button>
+      <button class="ind2" data-f="server/icons.js">icons.js</button>
+      <div class="dir ind2">routes/</div>
+      <button class="ind2" style="padding-left:58px" data-f="server/routes/sessions.js">sessions.js</button>
+      <button class="ind2" style="padding-left:58px" data-f="server/routes/photos.js">photos.js</button>
+      <button class="ind2" style="padding-left:58px" data-f="server/routes/status.js">status.js</button>
+      <div class="dir ind">public/</div>
+      <button class="ind2" data-f="public/index.html">index.html</button>
+      <div class="dir ind2">camera/</div>
+      <button class="ind2" style="padding-left:58px" data-f="public/camera/index.html">index.html</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/camera/camera.js">camera.js ★</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/camera/queue.js">queue.js</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/camera/camera.css">camera.css</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/camera/manifest.webmanifest">manifest.webmanifest</button>
+      <div class="dir ind2">vitrine/</div>
+      <button class="ind2" style="padding-left:58px" data-f="public/vitrine/index.html">index.html</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/vitrine/vitrine.js">vitrine.js ★</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/vitrine/vitrine.css">vitrine.css</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/vitrine/manifest.webmanifest">manifest.webmanifest</button>
+      <div class="dir ind2">balcao/</div>
+      <button class="ind2" style="padding-left:58px" data-f="public/balcao/index.html">index.html</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/balcao/balcao.js">balcao.js ★</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/balcao/balcao.css">balcao.css</button>
+      <div class="dir ind2">status/</div>
+      <button class="ind2" style="padding-left:58px" data-f="public/status/index.html">index.html</button>
+      <div class="dir ind2">shared/</div>
+      <button class="ind2" style="padding-left:58px" data-f="public/shared/realtime.js">realtime.js</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/shared/uuid.js">uuid.js</button>
+      <button class="ind2" style="padding-left:58px" data-f="public/shared/icon.svg">icon.svg</button>
+      <div class="dir ind">scripts/</div>
+      <button class="ind2" data-f="scripts/ws-listen.js">ws-listen.js</button>
+      <button class="ind2" data-f="scripts/supervisor.js">supervisor.js ★</button>
+      <button class="ind2" data-f="scripts/estresse.js">estresse.js</button>
+      <div class="dir ind">docs/</div>
+      <button class="ind2" data-f="docs/index.html">index.html</button>
+      <div class="ghost ind">node_modules/ <small>(gerado)</small></div>
+      <button class="ind" data-f="data/">data/ <small>(gerado)</small></button>
+    </div>
+    <div class="card detail" id="detail"></div>
+  </div>
+</section>
+
+<!-- ============ FLUXOS ============ -->
+<section id="fluxos">
+  <h2>Fluxos passo a passo</h2>
+  <p class="sec-sub">O que acontece, em ordem, em cada situação.</p>
+  <div class="card">
+    <div class="tabs" id="flowTabs"></div>
+    <ol class="steps" id="flowSteps"></ol>
+    <p class="flow-note" id="flowNote"></p>
+  </div>
+</section>
+
+<!-- ============ DADOS ============ -->
+<section id="dados">
+  <h2>Onde os dados ficam</h2>
+  <p class="sec-sub">O <b>banco</b> sabe quais fotos existem e de qual família. As <b>pastas</b> guardam os bytes.</p>
+
+  <div class="two">
+    <div class="card">
+      <h3>Tabela <code>sessions</code> <small style="color:var(--muted);font-weight:400">uma por família</small></h3>
+      <div class="tbl-wrap"><table class="tbl">
+        <tr><th>coluna</th><th>exemplo</th><th>significado</th></tr>
+        <tr><td><code>id</code></td><td>3f2b…</td><td>UUID</td></tr>
+        <tr><td><code>code</code></td><td><b>47</b></td><td>número curto da família</td></tr>
+        <tr><td><code>day</code></td><td>2026-10-29</td><td>dia local; o code recomeça em 1</td></tr>
+        <tr><td><code>created_at</code></td><td>2026-10-29T18:03Z</td><td>data/hora ISO</td></tr>
+      </table></div>
+      <p class="cmd-desc"><code>UNIQUE (day, code)</code>: não existem duas famílias "47" no mesmo dia.</p>
+    </div>
+    <div class="card">
+      <h3>Tabela <code>photos</code></h3>
+      <div class="tbl-wrap"><table class="tbl">
+        <tr><th>coluna</th><th>significado</th></tr>
+        <tr><td><code>id</code></td><td>UUID do servidor</td></tr>
+        <tr><td><code>client_photo_id</code></td><td>UUID do iPhone · <b>UNIQUE</b></td></tr>
+        <tr><td><code>session_id</code></td><td>de qual família → <code>sessions.id</code></td></tr>
+        <tr><td><code>path_original / display / thumb</code></td><td>caminho relativo a <code>data/</code></td></tr>
+        <tr><td><code>hidden_from_display</code></td><td>0/1 · esconder da vitrine</td></tr>
+        <tr><td><code>print_count</code></td><td>reservado para a Fase 6</td></tr>
+        <tr><td><code>created_at</code></td><td>data/hora ISO</td></tr>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="two" style="margin-top:16px">
+    <div class="card">
+      <h3>Pastas no disco</h3>
+<pre><code>data/
+├── db.sqlite        ← banco (+ -wal e -shm, auxiliares)
+├── tmp/             ← uploads em trânsito (fica vazia)
+└── fotos/
+    └── 2026-10-29/                       ← dia da família
+        ├── familia-001/
+        │   ├── 001_143012_a1b2.jpg       ← original intocado
+        │   ├── 001_143045_c3d4.jpg          (código_horário_id)
+        │   └── _versoes/
+        │       ├── &lt;id&gt;-display.jpg     ≤ 2048 px
+        │       └── &lt;id&gt;-thumb.jpg       ≤ 400 px
+        └── familia-002/
+            └── …</code></pre>
+    </div>
+    <div class="card">
+      <h3>Bom saber</h3>
+      <ul style="padding-left:20px;margin:0">
+        <li><b>Plano B</b>: se o balcão falhar, o operador abre <code>familia-047</code> no Finder/Explorer e acha as fotos da família.</li>
+        <li><b>Caminhos relativos</b> no banco: dá para mover ou copiar <code>data/</code> para outro computador.</li>
+        <li><b>Backup</b>: copie a pasta <code>data/</code> inteira com o servidor parado.</li>
+        <li><b>Zerar testes</b>: pare o servidor e apague <code>data/</code>.</li>
+        <li>O banco usa <code>snake_case</code> e 0/1; a API usa <code>camelCase</code> e true/false. A tradução fica em <code>toPhoto</code>/<code>toSession</code> no <code>db.js</code>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ API ============ -->
+<section id="api">
+  <h2>A API</h2>
+  <p class="sec-sub">Tudo o que o servidor sabe responder hoje. Os eventos em roxo são enviados pelo WebSocket.</p>
+  <div class="card tbl-wrap">
+    <table class="tbl">
+      <tr><th>Método</th><th>Rota</th><th>Envia</th><th>Recebe</th><th>Evento</th></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/health</code></td><td>—</td><td><code>{ ok, version }</code></td><td>—</td></tr>
+      <tr><td><span class="m POST">POST</span></td><td><code>/api/sessions</code></td><td>—</td><td>201 <code>{ id, code, day, createdAt }</code></td><td class="ev">session.created</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/sessions/current</code></td><td>—</td><td><code>{ id, code, day, createdAt }</code></td><td>—</td></tr>
+      <tr><td><span class="m POST">POST</span></td><td><code>/api/photos</code></td><td>multipart: <code>file</code>, <code>sessionId</code>, <code>clientPhotoId</code></td><td>201 nova · 200 repetida · <code>{ id }</code></td><td class="ev">photo.created<br><small>(só se nova)</small></td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/photos?sessionId=&amp;day=&amp;since=&amp;limit=</code></td><td>—</td><td>lista em ordem cronológica; <code>day</code> = dia da família, limite até 5000</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/photos/:id</code></td><td>—</td><td>uma foto</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/photos/:id/original|display|thumb</code></td><td>—</td><td>a imagem</td><td>—</td></tr>
+      <tr><td><span class="m PATCH">PATCH</span></td><td><code>/api/photos/:id</code></td><td><code>{ "hiddenFromDisplay": true }</code></td><td>foto atualizada</td><td class="ev">photo.updated</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/status</code></td><td>—</td><td>tempo no ar, telas conectadas, números do dia, espaço em disco</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/status/</code></td><td>—</td><td>página de status</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/shared/icon-180|192|512.png</code></td><td>—</td><td>ícone do app (gerado do SVG)</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/camera/</code></td><td>—</td><td>página do iPhone</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/vitrine/?novo=&amp;slide=&amp;horas=</code></td><td>—</td><td>página do iPad (tempos opcionais)</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/balcao/</code></td><td>—</td><td>página do operador</td><td>—</td></tr>
+    </table>
+  </div>
+  <p class="cmd-desc">Formato de uma foto na API:</p>
+<pre><code>{ "id": "…", "clientPhotoId": "…", "sessionId": "…", "code": 47, "day": "2026-10-29", "hiddenFromDisplay": false, "printCount": 0, "createdAt": "2026-10-29T18:03:11.402Z" }</code></pre>
+</section>
+
+<!-- ============ RODAR ============ -->
+<section id="rodar">
+  <h2>Rodar e testar</h2>
+  <p class="sec-sub">Ctrl+C para parar o servidor. Mudou código do servidor? Pare e rode <code>npm start</code> de novo (ele não recarrega sozinho).</p>
+  <div class="card" id="cmds"></div>
+</section>
+
+<!-- ============ OPERAÇÃO ============ -->
+<section id="operacao">
+  <h2>Operação no evento</h2>
+  <p class="sec-sub">O que pode dar errado no dia, o que o sistema já resolve e o que depende de cuidado.</p>
+
+  <div class="two">
+    <div class="card">
+      <h3>🌐 "Sem internet" é o normal</h3>
+      <p style="margin:0;color:var(--muted)">Tudo roda na rede do roteador próprio. Se a internet do shopping cair, nada muda.</p>
+    </div>
+    <div class="card">
+      <h3>🔌 "Perder conexão" é outra coisa</h3>
+      <p style="margin:0;color:var(--muted)">É o iPhone não conseguir falar com o servidor. Qualquer quebra no caminho <b>iPhone → Wi-Fi → roteador → computador → servidor</b> causa isso. É disso que a fila offline protege.</p>
+    </div>
+  </div>
+
+  <div class="card tbl-wrap" style="margin-top:16px">
+    <table class="tbl">
+      <tr><th>O que acontece</th><th>Chance</th><th>O que o sistema faz</th><th>Cuidado que evita</th></tr>
+      <tr><td>Wi-Fi do iPhone oscila (distância, interferência, multidão)</td><td><b>alta</b></td><td>Fila segura e envia sozinha quando volta</td><td>Roteador dedicado e perto do fotógrafo</td></tr>
+      <tr><td>iPhone troca sozinho para o 4G ou o Wi-Fi do shopping ("rede sem internet")</td><td>média</td><td>Fila segura; precisa reconectar à rede certa</td><td>Esquecer o Wi-Fi do shopping; "Endereço privado" desligado</td></tr>
+      <tr><td>Computador dorme, desliga ou reinicia</td><td>média</td><td>Fila segura; fotos chegam quando o servidor volta</td><td>Na tomada e com no-break; dormir o sistema já impede</td></tr>
+      <tr><td>Servidor caiu ou travou</td><td>baixa</td><td>Fila segura; o supervisor reinicia sozinho</td><td>Já resolvido pelos dois cliques</td></tr>
+      <tr><td>A janela do sistema foi fechada</td><td>baixa/média</td><td>Fila segura; alguém precisa dar dois cliques de novo</td><td>Treinar a equipe a não fechar a janela</td></tr>
+      <tr><td>Roteador sem energia ou reiniciando</td><td>baixa</td><td>Fila segura; tudo reconecta quando volta</td><td><b>IP fixo</b> para o computador</td></tr>
+      <tr><td>Cabo solto ou Wi-Fi do computador caiu</td><td>baixa</td><td>Igual ao servidor sumindo</td><td>Computador no roteador por cabo</td></tr>
+    </table>
+  </div>
+
+  <h3 style="margin:24px 0 10px">O que a fila <u>não</u> resolve</h3>
+  <div class="decisions">
+    <div class="card decision"><h3>🔄 Recarregar com o servidor fora</h3><p>A página não abre do zero sem servidor (limite do http). As fotos continuam guardadas e saem quando a página abrir de novo.</p></div>
+    <div class="card decision"><h3>🌐 Endereço diferente</h3><p>Outro IP, ou <code>.local</code> no lugar do IP, é outra fila. As fotos antigas só saem pelo endereço antigo.</p></div>
+    <div class="card decision"><h3>📵 iPhone perdido ou quebrado</h3><p>As fotos tiradas pela página <b>não vão para o rolo da câmera</b>. O que estava na fila se perde. Fique de olho no "✓ Tudo enviado".</p></div>
+  </div>
+
+  <h3 style="margin:24px 0 10px">A operação é viável?</h3>
+  <div class="card">
+    <p style="margin-top:0"><b>Sim.</b> É a arquitetura comum nesse tipo de evento, não depende de nada externo, e a parte mais delicada (não perder foto) já está resolvida e testada. Os riscos que sobram são de <b>operação e hardware</b>, não de código:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>#</th><th>Ponto de atenção</th><th>Ação</th></tr>
+      <tr><td>1</td><td><b>Impressora indefinida</b>: velocidade e custo por cópia são o gargalo do negócio</td><td>Escolher e medir a velocidade real cedo, mesmo antes da Fase 6</td></tr>
+      <tr><td>2</td><td>Fotos da página não vão para o rolo da câmera</td><td>Wi-Fi bom e fila sempre perto de 0</td></tr>
+      <tr><td>3</td><td>Computador é ponto único de falha</td><td>Backup para HD externo (<b>pendente</b>) e no-break</td></tr>
+      <tr><td>4</td><td>Toque extra em "Usar foto" pode atrapalhar o ritmo</td><td>Testar com o fotógrafo real; se atrapalhar, app nativo</td></tr>
+      <tr><td>5</td><td>Bateria, rede trocada, terminal fechado</td><td>Checklist e treino da equipe</td></tr>
+    </table></div>
+    <p style="margin-bottom:0"><b>Plano B manual:</b> se tudo falhar, tirar com a câmera nativa do iPhone, passar por AirDrop ou cabo e imprimir pelo computador. As pastas <code>familia-047</code> já ajudam a organizar.</p>
+  </div>
+</section>
+
+<!-- ============ DECISÕES ============ -->
+<section id="decisoes">
+  <h2>Decisões tomadas</h2>
+  <p class="sec-sub">O que escolhemos e por quê, para não esquecer.</p>
+  <div class="decisions">
+    <div class="card decision"><h3>💻 Mac <i>ou</i> Windows no evento</h3><p>Ainda indefinido. O servidor não usa nada exclusivo de um sistema; o que for específico fica em <code>scripts/</code> (Fase 5).</p></div>
+    <div class="card decision"><h3>🗄️ node:sqlite</h3><p>Já vem no Node, nada para compilar no Windows. No lugar do <code>better-sqlite3</code>. Exige Node ≥ 22.13.</p></div>
+    <div class="card decision"><h3>🔄 heic-convert como plano B</h3><p>Substitui o <code>sips</code> (que só existe no Mac). JS puro, roda em qualquer sistema.</p></div>
+    <div class="card decision"><h3>📁 Original sempre guardado</h3><p>Nenhuma foto se perde, mesmo se o processamento falhar. A impressão futura usa a melhor qualidade.</p></div>
+    <div class="card decision"><h3>🧭 Caminhos relativos</h3><p>No banco, relativos a <code>data/</code>: a pasta pode mudar de lugar ou de computador.</p></div>
+    <div class="card decision"><h3>📅 Código por dia local</h3><p>Números curtos ("sou a 47") e o dia não vira às 21h, como aconteceria em UTC. Por isso a coluna extra <code>day</code>.</p></div>
+    <div class="card decision"><h3>1️⃣ Família nº 1 automática</h3><p>O iPhone sempre tem uma família válida, mesmo que ninguém aperte "Nova família".</p></div>
+    <div class="card decision"><h3>📷 Câmera nativa via &lt;input&gt;</h3><p>Resolução total e funciona em http. Custo: o toque extra em "Usar foto" (o app nativo resolveria).</p></div>
+    <div class="card decision"><h3>📱 Câmera horizontal e simples</h3><p>A maioria das fotos é na horizontal, então ela é o padrão. Dois botões meio a meio, "Nova família" (com o código) e "Tirar foto", e uma faixa com as últimas fotos, que confirmam o envio com ⏳ ou ✓. Sem galeria.</p></div>
+    <div class="card decision"><h3>🧾 Balcão sem seleção por enquanto</h3><p>Selecionar várias fotos e escolher cópias só faz sentido com impressão, então isso fica para a Fase 6. Até lá, "Abrir original" permite imprimir manualmente.</p></div>
+    <div class="card decision"><h3>🚫 Nova família só com conexão</h3><p>Criar família exige o servidor (é ele quem numera). Sem conexão o botão fica desativado; as fotos continuam na família atual.</p></div>
+    <div class="card decision"><h3>⚠️ Erro definitivo não some</h3><p>Foto recusada pelo servidor fica no iPhone em "Fotos com erro" até alguém tentar de novo ou descartar (com confirmação).</p></div>
+    <div class="card decision"><h3>📂 Uma pasta por família</h3><p><code>fotos/&lt;dia&gt;/familia-047/</code> com nomes legíveis: plano B se o balcão falhar. Usa o dia <i>da família</i>, para quem atravessa a meia-noite não se misturar com a 47 do dia seguinte.</p></div>
+    <div class="card decision"><h3>⏱️ Tempos da vitrine no endereço</h3><p>A decisão sobre os tempos ainda está em aberto. Com <code>?novo=&amp;slide=&amp;horas=</code>, dá para ajustar no dia sem mexer no código.</p></div>
+    <div class="card decision"><h3>🖱️ Dois cliques nos dois sistemas</h3><p>O supervisor é escrito em Node e serve para Mac e Windows; os arquivos de início só o chamam. Assim, o sistema do evento pode ser decidido depois. Iniciar ao ligar o computador fica para quando ele for definido.</p></div>
+    <div class="card decision"><h3>💾 Backup pendente</h3><p>Fica para o futuro, junto com o HD externo. Até lá, se o disco do computador falhar, as fotos se perdem.</p></div>
+    <div class="card decision"><h3>🌐 Um endereço só</h3><p>A fila pertence ao endereço (IP vs. .local, Safari vs. tela de início). No evento: sempre o mesmo, de preferência o IP fixo.</p></div>
+    <div class="card decision"><h3>🖨️ Impressão adiada</h3><p>Prioridade é a foto chegar. Impressora e sistema ainda indefinidos: vai para a Fase 6.</p></div>
+  </div>
+</section>
+
+<!-- ============ GLOSSÁRIO ============ -->
+<section id="glossario">
+  <h2>Glossário</h2>
+  <input class="search" id="gq" type="search" placeholder="Filtrar termos… (ex.: rota, cache)">
+  <div class="gloss" id="gloss"></div>
+</section>
+
+</main>
+
+<footer>Guia do projeto · atualizado na Fase 5 (em teste) · abre direto do disco, sem internet</footer>
+
+<script>
+/* ---------- explorador de arquivos ---------- */
+const FILES = {
+  'PROJETO.md': {
+    role: 'O plano do projeto: o que construir, fases, API e infraestrutura do evento.',
+    does: ['Lista as fases 1 a 6 e o critério de "pronto" de cada uma.', 'Define o contrato da API que todos os clientes seguem.', 'Tem a nota de atualização: Mac ou Windows, impressão adiada.'],
+  },
+  'package.json': {
+    role: 'A ficha do projeto para o npm.',
+    does: ['dependencies: express, ws, multer, sharp, heic-convert, bonjour-service.', 'scripts: "npm run iniciar" liga com supervisor; "npm start" só o servidor; "npm run ws" escuta eventos; "npm run estresse" testa carga.', 'engines: Node ≥ 22.13.'],
+  },
+  '.gitignore': {
+    role: 'O que não vai para o git.',
+    does: ['node_modules/: recriável com npm install.', 'data/: fotos de clientes são dados pessoais e não vão para repositório.'],
+  },
+  'server/index.js': {
+    role: 'Ponto de entrada. É o arquivo que o "npm start" roda; ele monta todas as peças.',
+    does: [
+      'Cria o app Express e registra /api/health, /api/sessions e /api/photos.',
+      'Responde 404 em JSON para qualquer outra rota /api/….',
+      'Serve a pasta public/ (public/camera/index.html vai virar /camera/).',
+      'Tratador de erros final: responde em JSON; arquivo maior que 60 MB → 413.',
+      'Pendura o WebSocket no mesmo servidor e escuta em 0.0.0.0:3000.',
+      'Mostra no terminal os IPs da rede (o endereço para digitar no iPhone).',
+      'Anuncia o Bonjour; se falhar, só avisa e não derruba o servidor.',
+      'Ctrl+C: desanuncia e fecha com educação (limite de 2 s).',
+    ],
+    uses: ['server/config.js', 'server/events.js', 'server/routes/sessions.js', 'server/routes/photos.js', 'server/routes/status.js', 'server/icons.js'],
+    pkgs: ['express', 'bonjour-service', 'node:http', 'node:os'],
+  },
+  'server/config.js': {
+    role: 'Um lugar só para as configurações.',
+    does: [
+      'PORT (3000 ou variável de ambiente), VERSION (do package.json).',
+      'Pastas: DATA_DIR, PHOTOS_DIR, TMP_DIR, DB_PATH (com path.join, que usa a barra certa em cada sistema).',
+      'Tamanhos: display 2048 px, thumb 400 px, upload máximo 60 MB.',
+      'localDay(): data local "AAAA-MM-DD", usada na pasta do dia e no código da família.',
+    ],
+    pkgs: ['node:path'],
+  },
+  'server/db.js': {
+    role: 'O banco de dados. Cria as tabelas e oferece funções simples de ler e gravar.',
+    does: [
+      'Ao ser importado: abre/cria data/db.sqlite, liga WAL e cria as tabelas se não existirem.',
+      'createSession(): maior code de hoje + 1.',
+      'getCurrentSession(): família mais recente de hoje; se não houver, cria a nº 1.',
+      'findPhotoIdByClientId(): o coração da idempotência ("já recebi esta foto?").',
+      'insertPhoto(), getPhoto(), getPhotoRow() (com caminhos), setHiddenFromDisplay().',
+      'listPhotos(): com since = "o que veio depois de X"; sem since = "as N mais recentes". Sempre em ordem cronológica.',
+      'toPhoto()/toSession(): traduzem do formato do banco para o da API.',
+    ],
+    uses: ['server/config.js'],
+    pkgs: ['node:sqlite', 'node:fs', 'node:crypto'],
+  },
+  'server/events.js': {
+    role: 'O WebSocket. Sabe quem está conectado e entrega mensagens; não sabe nada de fotos.',
+    does: [
+      'attach(server): abre o WebSocket em /ws, na mesma porta 3000 do HTTP.',
+      'Heartbeat a cada 30 s: derruba conexões mortas.',
+      'broadcast(evento): envia o JSON para todos.',
+      'clientCount(): quantos conectados (para a futura página /status).',
+    ],
+    pkgs: ['ws'],
+  },
+  'server/images.js': {
+    role: 'O processamento das fotos.',
+    does: [
+      'processPhoto(original, display, thumb): lê o original e gera as duas versões em paralelo.',
+      'Aplica a rotação do EXIF (.rotate()) e reduz sem esticar nem cortar.',
+      'Se o sharp falhar e o arquivo for HEIC: converte com heic-convert e tenta de novo.',
+      'looksLikeHeic(): reconhece HEIC pelos primeiros bytes, sem confiar no nome do arquivo.',
+    ],
+    uses: ['server/config.js'],
+    pkgs: ['sharp', 'heic-convert', 'node:fs/promises'],
+  },
+  'server/routes/sessions.js': {
+    role: 'Rotas das famílias.',
+    does: [
+      'POST /api/sessions: cria família, avisa session.created, responde 201.',
+      'GET /api/sessions/current: devolve a família atual.',
+    ],
+    uses: ['server/db.js', 'server/events.js'],
+    pkgs: ['express'],
+  },
+  'server/routes/photos.js': {
+    role: 'O arquivo mais importante: recebe, guarda e entrega as fotos.',
+    does: [
+      'POST /api/photos: multer salva em data/tmp → valida → checa idempotência (banco e "em andamento") → move para fotos/<dia>/familia-<código>/ → gera display/thumb em _versoes/ → grava no banco → avisa photo.created → 201.',
+      'Se a imagem for ilegível: mantém o original, apaga versões pela metade, responde 422.',
+      'inFlight: Map em memória clientPhotoId → processamento em andamento (para reenvios simultâneos).',
+      'GET /api/photos (lista), GET /api/photos/:id, GET /:id/original|display|thumb com cache longo.',
+      'PATCH /api/photos/:id: oculta/mostra na vitrine e avisa photo.updated.',
+    ],
+    uses: ['server/db.js', 'server/events.js', 'server/images.js', 'server/config.js'],
+    pkgs: ['express', 'multer', 'node:fs', 'node:path', 'node:crypto'],
+  },
+  'server/icons.js': {
+    role: 'Gera os ícones PNG da tela de início a partir do SVG.',
+    does: [
+      'Responde GET /shared/icon-180.png, icon-192.png e icon-512.png.',
+      'Desenha o PNG com o sharp na primeira vez e guarda na memória.',
+      'Existe porque o iPhone não aceita SVG como ícone de app.',
+    ],
+    uses: ['server/config.js', 'public/shared/icon.svg'],
+    pkgs: ['sharp', 'node:path'],
+  },
+  'public/camera/index.html': {
+    role: 'A página do iPhone (http://IP:3000/camera/). Só a estrutura; o comportamento está no camera.js.',
+    does: [
+      'Pensada primeiro para a horizontal: dois botões meio a meio em cima (verde "Nova família", vermelho "Tirar foto") e a faixa de últimas fotos embaixo, de ponta a ponta. Na vertical, um botão fica sobre o outro.',
+      'Barra de status no topo: conexão, situação do envio e última enviada.',
+      'Botão "Nova família", que também mostra o código da família e quantas fotos ela tem.',
+      'Botão "📸 Tirar foto": um <input type=file capture> que abre a câmera nativa.',
+      'Tela "Fotos com erro": só abre tocando no aviso, que só aparece se houver erro.',
+      'Tags de PWA: manifest, ícone, tela cheia.',
+    ],
+    uses: ['public/camera/camera.js', 'public/camera/camera.css', 'public/camera/manifest.webmanifest'],
+  },
+  'public/camera/camera.js': {
+    role: 'O cérebro da câmera: família, fila, envio, conexão e tela.',
+    does: [
+      'Família: busca a atual no servidor, guarda uma cópia no localStorage e cria nova (com confirmação; desativado sem conexão).',
+      'Foto escolhida → vira item da fila (com clientPhotoId novo, sessionId e code da família daquele momento) → tenta enviar.',
+      'drain(): envia a fila em ordem; sucesso = remove da fila; erro de rede = backoff 1 s → 30 s; recusa definitiva = "Fotos com erro".',
+      'Conexão: teste a cada 5 s em /api/health, WebSocket, evento "online" e volta do segundo plano.',
+      'Eventos: session.created troca a família; photo.created atualiza a contagem e as miniaturas.',
+      'Confirmação de envio: "⏳ Enviando", "📥 no iPhone, enviam quando voltar" ou "✓ Tudo enviado".',
+      'As últimas fotos da família, quantas couberem na largura, aparecem com ⏳ (ainda no iPhone) ou ✓ (já no servidor).',
+      'Avisa antes de fechar a página se ainda houver foto na fila.',
+    ],
+    uses: ['public/camera/queue.js', 'public/shared/uuid.js', 'public/shared/realtime.js'],
+  },
+  'public/camera/queue.js': {
+    role: 'A fila de envio no IndexedDB do iPhone.',
+    does: [
+      'queue.put(item): grava (ou atualiza) uma foto na fila.',
+      'queue.remove(id): tira da fila (só depois que o servidor confirmou).',
+      'queue.all(): lista em ordem de captura, a mais antiga primeiro.',
+      'Guarda a foto como ArrayBuffer (bytes crus), mais confiável que Blob em Safaris antigos.',
+    ],
+  },
+  'public/camera/camera.css': {
+    role: 'Visual da câmera: escuro, sem rolagem, com a horizontal como padrão e um ajuste para a vertical.',
+    does: ['Respeita as bordas do iPhone (notch nas laterais e barra inferior) com safe-area.', 'Barra de status muda de cor: verde conectado, âmbar enviando, vermelho sem conexão.'],
+  },
+  'public/camera/manifest.webmanifest': {
+    role: 'Diz ao celular como a página se comporta quando "instalada" na tela de início.',
+    does: ['Nome, ícones, cor de fundo.', 'display: standalone (sem barra do navegador), funciona nas duas orientações.', 'start_url /camera/.'],
+  },
+  'public/vitrine/index.html': {
+    role: 'A página do iPad (http://IP:3000/vitrine/). Só exibe, sem interação do cliente.',
+    does: ['Tela de espera, palco das fotos, neve fixa e aviso discreto de conexão.', 'Tags de PWA: manifest, ícone, tela cheia.'],
+    uses: ['public/vitrine/vitrine.js', 'public/vitrine/vitrine.css', 'public/vitrine/manifest.webmanifest'],
+  },
+  'public/vitrine/vitrine.js': {
+    role: 'O cérebro da vitrine: decide qual foto mostrar e quando.',
+    does: [
+      'Foto nova (photo.created) entra na hora, com o código da família em destaque.',
+      'A última foto fica na tela por 1 minuto; ao abrir a página, também começa por ela.',
+      'Depois de 1 minuto sem foto nova: slideshow embaralhado da janela de tempo, ignorando as ocultas.',
+      'photo.updated: foto oculta sai da tela na hora; foto reexibida volta ao slideshow.',
+      'Pré-carrega cada imagem antes da troca, com limite de 15 s.',
+      'A cada 60 s e ao reconectar, busca as fotos recentes; das que perdeu, as 5 mais recentes aparecem como novas.',
+      'Tempos configuráveis pelo endereço: ?novo=60&slide=6&horas=2.',
+      'Aviso "Reconectando…" só depois de 3 s sem conexão.',
+    ],
+    uses: ['public/shared/realtime.js'],
+  },
+  'public/vitrine/vitrine.css': {
+    role: 'Visual da vitrine: fundo vermelho em degradê, foto inteira na tela e neve fixa por cima.',
+    does: ['Transição suave entre as fotos.', 'Código da família bem maior em foto nova.', 'O degradê aparece nas laterais das fotos e a neve cai o tempo todo.'],
+  },
+  'public/vitrine/manifest.webmanifest': {
+    role: 'Faz a vitrine abrir em tela cheia quando adicionada à Tela de Início do iPad.',
+    does: ['Nome, ícones e cor de fundo.', 'display: standalone (sem barra do navegador).'],
+  },
+  'Iniciar no Mac.command': {
+    role: 'Dois cliques para ligar o sistema no Mac.',
+    does: ['Encontra o Node, inclusive quando instalado pelo nvm ou Homebrew.', 'Avisa se faltar o Node ou as dependências.', 'Chama o supervisor. Para encerrar: Ctrl+C na janela.'],
+    uses: ['scripts/supervisor.js'],
+  },
+  'Iniciar no Windows.bat': {
+    role: 'Dois cliques para ligar o sistema no Windows. Ainda precisa ser testado num PC Windows.',
+    does: ['Avisa se faltar o Node ou as dependências.', 'Chama o supervisor. Para encerrar: Ctrl+C na janela.'],
+    uses: ['scripts/supervisor.js'],
+  },
+  'scripts/supervisor.js': {
+    role: 'Mantém o servidor no ar durante o evento. Funciona igual no Mac e no Windows.',
+    does: [
+      'Inicia o servidor como um processo separado e o reinicia se ele cair: 4 s, 8 s… até 30 s se continuar caindo.',
+      'Confere /api/health a cada 10 s; depois de 3 falhas seguidas, considera travado e reinicia.',
+      'Grava tudo o que o servidor escreve em data/logs/AAAA-MM-DD.log.',
+      'Impede o computador de dormir: caffeinate no Mac, SetThreadExecutionState no Windows.',
+      'Abre o balcão no navegador. Com o sistema já ligado, dois cliques só abrem o balcão de novo.',
+    ],
+    uses: ['server/config.js', 'server/index.js'],
+    pkgs: ['node:child_process', 'node:fs', 'node:readline'],
+  },
+  'scripts/estresse.js': {
+    role: 'Teste de carga: npm run estresse [quantidade] [endereço].',
+    does: [
+      'Cria uma família e envia as fotos em sequência, como o iPhone, com uma imagem de 12 MP.',
+      'A cada 10 fotos, reenvia uma com o mesmo clientPhotoId, como se a resposta tivesse se perdido.',
+      'Se a rede ou o servidor caírem, continua tentando por até 10 min por foto.',
+      'No fim, compara com o servidor e diz PASSOU ou FALHOU: nenhuma perdida, nenhuma duplicada.',
+    ],
+    pkgs: ['sharp', 'node:crypto'],
+  },
+  'server/routes/status.js': {
+    role: 'GET /api/status: os números da página de status.',
+    does: ['Tempo no ar, telas conectadas, fotos e famílias do dia, última foto e espaço em disco.'],
+    uses: ['server/db.js', 'server/events.js', 'server/config.js'],
+    pkgs: ['express', 'node:fs/promises'],
+  },
+  'public/status/index.html': {
+    role: 'Página http://IP:3000/status/: a saúde do sistema de relance, atualizada a cada 5 s.',
+    does: ['Mostra os números de /api/status em cartões.', 'Espaço em disco fica amarelo abaixo de 10 GB e vermelho abaixo de 2 GB.', 'Avisa quando o servidor para de responder.'],
+  },
+  'public/balcao/index.html': {
+    role: 'A página do operador (http://IP:3000/balcao/), no computador central.',
+    does: ['Topo com busca pelo código, seletor de dia, totais e conexão.', 'Lista de famílias com as miniaturas.', 'Tela de foto ampliada, com "Ocultar da vitrine" e "Abrir original".'],
+    uses: ['public/balcao/balcao.js', 'public/balcao/balcao.css'],
+  },
+  'public/balcao/balcao.js': {
+    role: 'O cérebro do balcão: carrega o dia, agrupa por família, busca e amplia.',
+    does: [
+      'Carrega as fotos do dia escolhido com /api/photos?day=…; repete ao reconectar e a cada minuto.',
+      'photo.created: busca a foto e a coloca na família certa, com um destaque dourado.',
+      'photo.updated: mantém o estado de "oculta" igual em todas as telas.',
+      'Busca pelo código exato no dia escolhido; digitar um número em qualquer lugar já vai para a busca, e Esc limpa.',
+      'Foto ampliada: setas do teclado navegam e Esc fecha.',
+      'Na virada do dia, passa sozinho para o dia novo, se estava vendo "hoje".',
+    ],
+    uses: ['public/shared/realtime.js'],
+  },
+  'public/balcao/balcao.css': {
+    role: 'Visual do balcão: escuro, feito para tela de computador, com a busca sempre no topo.',
+    does: ['O código da família acompanha a rolagem ao lado das fotos.', 'Fotos ocultas ficam apagadas, com uma etiqueta.'],
+  },
+  'public/shared/realtime.js': {
+    role: 'Conexão WebSocket que reconecta sozinha. Usada pela câmera, pela vitrine e pelo balcão.',
+    does: ['connectRealtime({ onEvent, onOpen, onClose }).', 'Se cair, reconecta em 1 s, 2 s, 4 s… até 15 s.'],
+  },
+  'public/shared/uuid.js': {
+    role: 'Gera UUID v4 no navegador, inclusive em http (onde crypto.randomUUID não existe).',
+    does: ['Usa crypto.randomUUID se existir; senão monta com crypto.getRandomValues.'],
+  },
+  'public/shared/icon.svg': {
+    role: 'O desenho do ícone do app (câmera branca no fundo vermelho).',
+    does: ['Fonte única do ícone; o server/icons.js converte para PNG.'],
+  },
+  'public/index.html': {
+    role: 'Página inicial do servidor (http://IP:3000/). Hoje é uma página de teste.',
+    does: ['Conecta no /ws e mostra cada evento ao vivo.', 'Reconecta sozinha a cada 2 s se cair (protótipo do que vitrine e balcão vão fazer).', 'HTML + JS puro, sem nada externo.'],
+  },
+  'scripts/ws-listen.js': {
+    role: 'Cliente de teste no terminal (npm run ws).',
+    does: ['Conecta no /ws, imprime cada evento com horário e reconecta sozinho.', 'Aceita outro endereço: node scripts/ws-listen.js ws://192.168.0.10:3000/ws.'],
+    pkgs: ['ws'],
+  },
+  'docs/index.html': {
+    role: 'Esta página. Abre direto do disco, sem servidor.',
+    does: ['Explica o que existe, como se conecta e os conceitos.', 'Atualizada a cada fase.'],
+  },
+  'data/': {
+    role: 'Criada automaticamente ao rodar. Guarda o banco e as fotos.',
+    does: ['db.sqlite: o banco.', 'tmp/: uploads em trânsito.', 'fotos/AAAA-MM-DD/familia-047/: originais com nome legível (047_143012_a1b2.jpg).', 'fotos/…/familia-047/_versoes/: display e thumb.', 'logs/AAAA-MM-DD.log: o que aconteceu em cada dia.'],
+  },
+};
+
+// quem usa cada arquivo (calculado a partir de "uses")
+const USED_BY = {};
+for (const [f, d] of Object.entries(FILES)) for (const u of d.uses || []) (USED_BY[u] ||= []).push(f);
+
+const detail = document.getElementById('detail');
+const tree = document.getElementById('tree');
+
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+function showFile(f) {
+  const d = FILES[f];
+  tree.querySelectorAll('button').forEach((b) => b.classList.toggle('sel', b.dataset.f === f));
+  const chips = (arr, link) => arr && arr.length
+    ? `<div class="chips">${arr.map((x) => link ? `<span class="chip link" data-go="${x}">${x}</span>` : `<span class="chip">${x}</span>`).join('')}</div>`
+    : '<p style="color:var(--muted);margin:4px 0 12px">—</p>';
+  const href = f === 'data/' ? null : (f.startsWith('docs/') ? 'index.html' : '../' + f);
+  detail.innerHTML = `
+    <h3>${f}</h3>
+    <p class="role">${esc(d.role)}</p>
+    <div class="label">O que faz</div>
+    <ul>${d.does.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
+    ${d.uses || USED_BY[f] ? `
+      <div class="label">Usa (arquivos do projeto)</div>${chips(d.uses, true)}
+      <div class="label">É usado por</div>${chips(USED_BY[f], true)}` : ''}
+    ${d.pkgs ? `<div class="label">Pacotes</div>${chips(d.pkgs)}` : ''}
+    ${href ? `<a href="${href}">Abrir o arquivo →</a>` : ''}`;
+  detail.querySelectorAll('[data-go]').forEach((c) => c.addEventListener('click', () => showFile(c.dataset.go)));
+}
+tree.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => showFile(b.dataset.f)));
+showFile('server/index.js');
+
+/* ---------- fluxos ---------- */
+const C = 'a-client', S = 'a-server', D = 'a-disk', W = 'a-ws', OK = 'a-ok';
+const FLOWS = {
+  'Foto sem Wi-Fi (fase 2)': {
+    steps: [
+      [C, 'fotógrafo', 'Toca "📸 Tirar foto", a câmera nativa abre, tira e toca "Usar foto".'],
+      [C, 'camera.js', 'Cria um <code>clientPhotoId</code> novo e anota a família atual (<code>sessionId</code> e <code>code</code>).'],
+      [D, 'queue.js', 'Grava a foto na fila do <b>IndexedDB do iPhone</b>. A contagem sobe e a miniatura aparece com ⏳.'],
+      [C, 'camera.js', 'Tenta enviar → falha (sem rede). Barra fica vermelha: "Sem conexão" e "📥 1 foto no iPhone, enviam quando voltar".'],
+      [C, 'camera.js', 'Espera e tenta de novo: 1 s, 2 s, 4 s… até 30 s. Novas fotos continuam entrando na fila.'],
+      [C, 'camera.js', 'O Wi-Fi volta: o teste de 5 s (ou o WebSocket) percebe e manda enviar <b>na hora</b>.'],
+      [S, 'servidor', 'Recebe cada foto (fluxo "Foto chegando"), da mais antiga para a mais nova.'],
+      [OK, 'camera.js', 'Cada 201/200 remove a foto da fila e a miniatura passa para ✓. Fila vazia: a barra mostra "✓ Tudo enviado".'],
+    ],
+    note: 'Se a resposta se perder depois do servidor salvar, a foto continua na fila e é reenviada com o mesmo clientPhotoId: o servidor responde 200 com o mesmo id, sem duplicar.',
+  },
+  'Servidor cai (fase 5)': {
+    steps: [
+      [S, 'servidor', 'Cai por um erro ou para de responder.'],
+      [S, 'supervisor', 'Percebe a saída na hora, ou em cerca de 30 s se estiver travado, e registra no log.'],
+      [C, 'iPhone', 'As fotos ficam na fila; a barra fica vermelha.'],
+      [S, 'supervisor', 'Inicia o servidor de novo. O banco e as fotos estão no disco, então nada se perde.'],
+      [OK, 'telas', 'iPhone, iPad e balcão reconectam sozinhos e a fila é enviada.'],
+    ],
+    note: 'Se a foto chegou mas a resposta se perdeu na queda, o reenvio devolve o mesmo id, sem duplicar.',
+  },
+  'Atender no balcão (fase 4)': {
+    steps: [
+      [C, 'cliente', 'Diz ao operador: "sou a 47".'],
+      [C, 'balcao.js', 'O operador digita 47 e a tela mostra só essa família, no dia escolhido.'],
+      [C, 'balcao.js', 'Um clique amplia a foto, usando <code>/api/photos/:id/display</code>.'],
+      [OK, 'Abrir original', 'Abre o arquivo original no navegador, para imprimir com Cmd/Ctrl+P.'],
+      [W, 'Ocultar da vitrine', '<code>PATCH /api/photos/:id</code>; o evento <code>photo.updated</code> tira a foto do iPad na hora.'],
+    ],
+    note: 'Os códigos recomeçam a cada dia. Para uma família de outro dia, troque o dia no topo antes de buscar.',
+  },
+  'Foto na vitrine (fase 3)': {
+    steps: [
+      [W, 'events.js', 'Depois de guardar a foto, o servidor envia <code>photo.created</code> com o <code>id</code> e o <code>code</code>.'],
+      [C, 'vitrine.js', 'Coloca a foto na fila de novas e pede a troca.'],
+      [C, 'vitrine.js', 'Baixa <code>/api/photos/:id/display</code> por inteiro, ainda fora da tela.'],
+      [C, 'vitrine.js', 'A foto entra com transição suave e o código da família em destaque.'],
+      [C, 'vitrine.js', 'Fica 1 minuto (ou 2,5 s, se outra foto nova estiver esperando).'],
+      [OK, 'vitrine', 'Sem foto nova nesse tempo, começa o slideshow; a foto agora faz parte dele.'],
+    ],
+    note: 'Se a foto for ocultada, ela sai da tela e do slideshow na hora.',
+  },
+  'Foto chegando': {
+    steps: [
+      [C, 'iPhone', 'Envia <code>POST /api/photos</code> com <code>file</code>, <code>sessionId</code> e <code>clientPhotoId</code>.'],
+      [D, 'multer', 'Recebe o arquivo e salva em <code>data/tmp/</code> com nome aleatório.'],
+      [S, 'photos.js', 'Confere se veio <code>file</code> e <code>clientPhotoId</code> (senão 400).'],
+      [S, 'db.js', 'Já existe foto com esse <code>clientPhotoId</code>? Não. Está em andamento? Não.'],
+      [S, 'db.js', 'O <code>sessionId</code> existe? Sim.'],
+      [D, 'photos.js', 'Cria <code>data/fotos/AAAA-MM-DD/familia-047/</code> e <b>move</b> o arquivo para <code>047_143012_a1b2.jpg</code>.'],
+      [S, 'images.js', 'Gira pelo EXIF e gera <code>display</code> e <code>thumb</code> em paralelo (converte HEIC se precisar).'],
+      [D, 'db.js', '<code>INSERT</code> na tabela <code>photos</code> com os caminhos relativos.'],
+      [W, 'events.js', 'Broadcast <code>photo.created</code> para todos os conectados.'],
+      [OK, 'resposta', '<b>201</b> <code>{ id }</code> para o iPhone.'],
+    ],
+    note: 'Se a imagem não puder ser lida no passo 7: o original fica guardado e a resposta é 422.',
+  },
+  'Reenvio': {
+    steps: [
+      [C, 'iPhone', 'Não recebeu resposta (Wi-Fi piscou) e reenvia com o <b>mesmo</b> <code>clientPhotoId</code>.'],
+      [S, 'db.js', 'Já existe foto com esse <code>clientPhotoId</code>? <b>Sim.</b>'],
+      [D, 'photos.js', 'Apaga o arquivo temporário recém-chegado.'],
+      [OK, 'resposta', '<b>200</b> <code>{ mesmo id }</code>. Nada é processado, gravado ou anunciado.'],
+    ],
+    note: 'Se o primeiro envio ainda estiver sendo processado, o reenvio espera ele terminar (mapa inFlight) e devolve o mesmo id.',
+  },
+  'Reconexão': {
+    steps: [
+      [C, 'iPad', 'A conexão WebSocket cai (Wi-Fi, servidor reiniciou…).'],
+      [C, 'iPad', 'Tenta reconectar em <code>/ws</code> a cada poucos segundos.'],
+      [W, 'events.js', 'Aceita a conexão; a partir daqui, recebe os eventos novos.'],
+      [C, 'iPad', 'Pede <code>GET /api/photos?limit=500</code> e compara com o que já conhece.'],
+      [OK, 'vitrine', 'Tudo que perdeu entra no slideshow; as 5 mais recentes aparecem como fotos novas.'],
+    ],
+    note: 'O WebSocket só avisa; a API é a fonte da verdade. A vitrine também repete essa busca a cada 60 s, caso a conexão morra sem avisar.',
+  },
+  'Nova família': {
+    steps: [
+      [C, 'iPhone', 'Toca "Nova família" → <code>POST /api/sessions</code>.'],
+      [S, 'db.js', 'Busca o maior <code>code</code> de hoje e soma 1 (ou começa em 1).'],
+      [D, 'db.js', '<code>INSERT</code> em <code>sessions</code>.'],
+      [W, 'events.js', 'Broadcast <code>session.created</code>.'],
+      [OK, 'resposta', '<b>201</b> <code>{ id, code }</code>.'],
+    ],
+    note: 'GET /api/sessions/current devolve a mais recente de hoje e, se não houver nenhuma, cria a nº 1.',
+  },
+  'Ligar o servidor': {
+    steps: [
+      [S, 'dois cliques', 'O arquivo de início roda o supervisor, que impede o computador de dormir e chama <code>node server/index.js</code>.'],
+      [S, 'config.js', 'Calcula porta e pastas.'],
+      [D, 'db.js', 'Abre/cria <code>data/db.sqlite</code> e as tabelas (via <code>require</code> das rotas).'],
+      [D, 'photos.js', 'Garante a pasta <code>data/tmp/</code>.'],
+      [S, 'index.js', 'Registra rotas, arquivos de <code>public/</code> e tratador de erros.'],
+      [W, 'events.js', 'WebSocket pronto em <code>/ws</code>.'],
+      [OK, 'index.js', '"ouvindo na porta 3000" + IPs da rede + anúncio Bonjour.'],
+    ],
+    note: '',
+  },
+};
+const tabs = document.getElementById('flowTabs');
+const stepsEl = document.getElementById('flowSteps');
+const noteEl = document.getElementById('flowNote');
+function showFlow(name) {
+  tabs.querySelectorAll('button').forEach((b) => b.classList.toggle('sel', b.textContent === name));
+  const f = FLOWS[name];
+  stepsEl.innerHTML = f.steps.map(([cls, who, txt]) => `<li><span class="actor ${cls}">${who}</span>${txt}</li>`).join('');
+  noteEl.innerHTML = f.note ? '💡 ' + f.note : '';
+}
+for (const name of Object.keys(FLOWS)) {
+  const b = document.createElement('button');
+  b.textContent = name;
+  b.addEventListener('click', () => showFlow(name));
+  tabs.appendChild(b);
+}
+showFlow('Foto sem Wi-Fi (fase 2)');
+
+/* ---------- comandos ---------- */
+const CMDS = [
+  ['Só na primeira vez em cada computador (ou quando mudar o package.json)', 'npm install'],
+  ['No evento: dois cliques em "Iniciar no Mac.command" ou "Iniciar no Windows.bat". Pelo terminal:', 'npm run iniciar'],
+  ['Teste de estresse, com dados separados dos reais. Terminal 1:', 'PORT=3100 DATA_DIR=/tmp/noel-teste npm run iniciar'],
+  ['Teste de estresse. Terminal 2:', 'npm run estresse -- 300 http://localhost:3100'],
+  ['Desenvolvimento: só o servidor, sem supervisor', 'npm start'],
+  ['Terminal 2: escuta os eventos (ou abra http://localhost:3000)', 'npm run ws'],
+  ['Terminal 3: o servidor está vivo?', 'curl http://localhost:3000/api/health'],
+  ['Família atual (copie o "id")', 'curl http://localhost:3000/api/sessions/current'],
+  ['Criar família nova', 'curl -X POST http://localhost:3000/api/sessions'],
+  ['Enviar uma foto', 'curl -F "file=@foto.jpg" -F "sessionId=<ID>" -F "clientPhotoId=teste-1" http://localhost:3000/api/photos'],
+  ['Listar as 5 mais recentes', 'curl "http://localhost:3000/api/photos?limit=5"'],
+  ['Ocultar da vitrine', `curl -X PATCH -H "Content-Type: application/json" -d '{"hiddenFromDisplay":true}' http://localhost:3000/api/photos/<ID-DA-FOTO>`],
+];
+document.getElementById('cmds').innerHTML = CMDS.map(([d, c], i) => `
+  <p class="cmd-desc"${i === 0 ? ' style="margin-top:0"' : ''}>${d}</p>
+  <div class="cmd"><pre><code>${esc(c)}</code></pre><button data-c="${i}">copiar</button></div>`).join('')
+  + '<p class="cmd-desc">No iPhone (mesmo Wi-Fi): abra <code>http://&lt;IP que aparece no terminal&gt;:3000/camera/</code>. Para virar "app": botão Compartilhar → <b>Adicionar à Tela de Início</b>.</p>'
+  + '<p class="cmd-desc">No iPad (mesmo Wi-Fi): abra <code>http://&lt;IP&gt;:3000/vitrine/</code> e deixe <b>Bloqueio Automático: Nunca</b>. Tempos em segundos e horas: <code>/vitrine/?novo=60&amp;slide=6&amp;horas=2</code>.</p>';
+document.querySelectorAll('[data-c]').forEach((b) => b.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(CMDS[b.dataset.c][1]); b.textContent = 'copiado ✓'; }
+  catch { b.textContent = 'selecione e copie'; }
+  setTimeout(() => { b.textContent = 'copiar'; }, 1500);
+}));
+
+/* ---------- glossário ---------- */
+const GLOSS = [
+  ['API', 'Conjunto de rotas que o servidor oferece para outros programas.'],
+  ['async / await', 'Escrever código que espera algo demorado sem travar o resto.'],
+  ['Broadcast', 'Mandar a mesma mensagem para todos os conectados.'],
+  ['Bonjour / mDNS', 'Aparelhos se acharem na rede local sem saber o IP.'],
+  ['Cache', 'Guardar uma cópia para não baixar de novo.'],
+  ['EXIF', 'Dados dentro da foto, incluindo a orientação.'],
+  ['Express', 'Pacote que organiza rotas e middlewares do servidor HTTP.'],
+  ['HEIC', 'Formato de foto padrão do iPhone.'],
+  ['Idempotente', 'Repetir a operação não muda o resultado (sem duplicatas).'],
+  ['IndexedDB', 'Banco de dados dentro do navegador; guarda a fila do iPhone.'],
+  ['Backoff', 'Esperar cada vez mais entre tentativas (1 s, 2 s, 4 s…).'],
+  ['Contexto seguro', 'https ou localhost; algumas funções do navegador só existem nele.'],
+  ['Service Worker', 'Script que deixa a página abrir offline; exige contexto seguro.'],
+  ['Wake Lock', 'Função que mantém a tela ligada; exige contexto seguro.'],
+  ['Supervisor', 'Programa que vigia o servidor e o reinicia se ele cair ou travar.'],
+  ['Log', 'Registro em arquivo do que o sistema fez, para investigar depois.'],
+  ['Teste de estresse', 'Forçar o sistema com muita carga e falhas para ver se aguenta.'],
+  ['Pré-carregamento', 'Baixar a imagem inteira antes de mostrar, para não piscar.'],
+  ['PWA', 'Página que se instala na tela de início e abre como app.'],
+  ['localStorage', 'Armazenamento simples de texto do navegador (guardamos a família atual).'],
+  ['safe-area', 'Margens do iPhone (notch, barra inferior) que o CSS respeita.'],
+  ['JSON', 'Formato de texto para trocar dados: { "chave": "valor" }.'],
+  ['localhost', 'Este mesmo computador (127.0.0.1).'],
+  ['Middleware', 'Função que processa o pedido no meio do caminho.'],
+  ['Módulo', 'Um arquivo .js que exporta coisas para outros usarem.'],
+  ['Multipart', 'Formato de envio de formulário com arquivo.'],
+  ['npm', 'Gerenciador de pacotes do Node.'],
+  ['Pacote', 'Código pronto de terceiros, baixado pelo npm.'],
+  ['Porta', 'Número que identifica o programa dentro do computador (3000).'],
+  ['Prepared statement', 'Consulta SQL com "?", rápida e segura.'],
+  ['Promise', 'Um resultado que vai chegar depois.'],
+  ['Rota', 'Método + caminho que o servidor sabe responder.'],
+  ['SQL', 'Linguagem para conversar com o banco de dados.'],
+  ['SQLite', 'Banco de dados em um único arquivo.'],
+  ['Status HTTP', 'Código numérico do resultado (200, 201, 400, 404…).'],
+  ['UUID', 'Identificador aleatório praticamente impossível de repetir.'],
+  ['Variável de ambiente', 'Configuração passada na hora de rodar (PORT=4000).'],
+  ['WAL', 'Modo do SQLite mais robusto para leitura e escrita simultâneas.'],
+  ['WebSocket', 'Conexão aberta que deixa o servidor avisar o cliente na hora.'],
+];
+const glossEl = document.getElementById('gloss');
+function renderGloss(q = '') {
+  const n = q.trim().toLowerCase();
+  glossEl.innerHTML = GLOSS
+    .filter(([t, d]) => !n || t.toLowerCase().includes(n) || d.toLowerCase().includes(n))
+    .map(([t, d]) => `<div><b>${esc(t)}</b><span>${esc(d)}</span></div>`).join('')
+    || '<div><span>Nenhum termo encontrado.</span></div>';
+}
+document.getElementById('gq').addEventListener('input', (e) => renderGloss(e.target.value));
+renderGloss();
+
+/* ---------- destaque da seção atual no menu ---------- */
+const links = [...document.querySelectorAll('#toc a')];
+const obs = new IntersectionObserver((entries) => {
+  for (const e of entries) if (e.isIntersecting) {
+    links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+  }
+}, { rootMargin: '-40% 0px -55% 0px' });
+document.querySelectorAll('main section').forEach((s) => obs.observe(s));
+</script>
+</body>
+</html>

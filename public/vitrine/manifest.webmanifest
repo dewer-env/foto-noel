@@ -1,0 +1,13 @@
+{
+  "name": "Papai Noel · Vitrine",
+  "short_name": "Vitrine Noel",
+  "start_url": "/vitrine/",
+  "scope": "/vitrine/",
+  "display": "standalone",
+  "background_color": "#0d0b0a",
+  "theme_color": "#0d0b0a",
+  "icons": [
+    { "src": "/shared/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/shared/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

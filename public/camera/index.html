@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Câmera · Papai Noel</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/shared/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Câmera Noel">
+  <meta name="theme-color" content="#14110f">
+  <link rel="stylesheet" href="camera.css">
+</head>
+<body>
+  <header class="status" id="status" data-state="offline">
+    <span class="dot"></span>
+    <span id="statusText">Conectando…</span>
+    <span class="delivery" id="deliveryText"></span>
+    <span id="lastText"></span>
+    <button class="failed-open" id="failedOpen" type="button" hidden></button>
+  </header>
+
+  <main class="layout">
+    <div class="actions">
+      <button class="btn-family" id="newFamily" type="button">
+        <span class="family-label">FAMÍLIA · <span id="photoCount">0 fotos</span></span>
+        <span class="family-code" id="code">–</span>
+        <span class="family-action">Nova família</span>
+      </button>
+
+      <label class="btn-shoot" for="cameraInput">📸 Tirar foto</label>
+      <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden>
+    </div>
+
+    <div class="thumbs" id="thumbs" aria-label="Últimas fotos desta família"></div>
+  </main>
+
+  <section class="failed" id="failed" hidden>
+    <div class="failed-head">
+      <h2>⚠️ Fotos com erro</h2>
+      <button id="failedClose" type="button">Fechar</button>
+    </div>
+    <p>O servidor recusou estas fotos. Elas continuam guardadas no iPhone.</p>
+    <ul id="failedList"></ul>
+  </section>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script type="module" src="camera.js"></script>
+</body>
+</html>

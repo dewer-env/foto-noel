@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Vitrine · Papai Noel</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/shared/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Vitrine Noel">
+  <meta name="theme-color" content="#0d0b0a">
+  <link rel="stylesheet" href="vitrine.css">
+</head>
+<body>
+  <div class="idle" id="idle">
+    <div class="idle-text">
+      <div class="idle-icon">🎅</div>
+      <h1>Foto com o Papai Noel</h1>
+      <p>As fotos aparecem aqui</p>
+    </div>
+  </div>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="snow" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+
+  <div class="conn" id="conn" hidden>Reconectando…</div>
+
+  <script type="module" src="vitrine.js"></script>
+</body>
+</html>
