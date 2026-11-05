@@ -820,7 +820,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
     <div class="card decision"><h3>🖱️ Dois cliques nos dois sistemas</h3><p>O supervisor é escrito em Node e serve para Mac e Windows; os arquivos de início só o chamam. Assim, o sistema do evento pode ser decidido depois. Iniciar ao ligar o computador fica para quando ele for definido.</p></div>
     <div class="card decision"><h3>💾 Backup pendente</h3><p>Fica para o futuro, junto com o HD externo. Até lá, se o disco do computador falhar, as fotos se perdem.</p></div>
     <div class="card decision"><h3>🌐 Um endereço só</h3><p>A fila pertence ao endereço (IP vs. .local, Safari vs. tela de início). No evento: sempre o mesmo, de preferência o IP fixo.</p></div>
-    <div class="card decision"><h3>🖨️ Impressão aos poucos</h3><p>A impressora é a Kodak 305 e, por enquanto, a impressão é só no Windows. O balcão pede ao servidor, que manda direto para a Kodak, sem diálogo, em 10x15 ou 15x20. A foto entra inteira na folha.</p></div>
+    <div class="card decision"><h3>🖨️ Impressão aos poucos</h3><p>A impressora é a Kodak 305 e, por enquanto, a impressão é só no Windows. O balcão pede ao servidor, que manda direto para a Kodak, sem diálogo, em 10x15 ou 15x20. A foto preenche a folha, como no app da Kodak: no 10x15 corta cerca de 7% em cima e embaixo.</p></div>
   </div>
 </section>
 
@@ -1066,7 +1066,7 @@ const FILES = {
     role: 'Script do PowerShell que fala com as impressoras do Windows.',
     does: [
       '-Mode list: lista as impressoras e os papéis de cada uma, em JSON.',
-      '-Mode print: imprime a foto inteira na folha, centralizada, sem margem e sem diálogo.',
+      '-Mode print: imprime preenchendo a folha toda, centralizada, sem margem e sem diálogo, como o app da Kodak.',
       'Escrito só em ASCII, porque o PowerShell do Windows lê arquivos sem BOM como ANSI.',
     ],
     pkgs: ['System.Drawing (Windows)'],

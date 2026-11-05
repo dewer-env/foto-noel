@@ -17,7 +17,8 @@ const SIZES = {
   '4x6': { label: '10x15', width: 400, height: 600 },
   '6x8': { label: '15x20', width: 600, height: 800 },
 };
-const SIZE_TOLERANCE = 10;
+// Drivers de impressão sem borda informam o papel com sobra: a Kodak 305 diz 409x622 para o 4x6.
+const SIZE_TOLERANCE = 30;
 
 function httpError(status, message) {
   return Object.assign(new Error(message), { status });
@@ -38,12 +39,18 @@ function runScript(args) {
 }
 
 // Papel do driver com as medidas do tamanho pedido, em qualquer orientação.
-// Se houver mais de um (ex.: "6x8" e uma variante), fica com o de nome mais curto.
+// Várias opções da Kodak têm a mesma medida ("4 x 6 in", "2 x 6 in x 2", "6 x 8 in ... border"):
+// vence a que começa com o tamanho, sem "x 2" (duas fotos por folha); depois, a de medida mais
+// próxima; por fim, a de nome mais curto.
 function findPaper(papers, size) {
   const close = (a, b) => Math.abs(a - b) <= SIZE_TOLERANCE;
+  const [short, long] = [size.width / 100, size.height / 100];
+  const named = new RegExp(`^\\s*(${short}\\s*x\\s*${long}|${long}\\s*x\\s*${short})\\b(?!.*\\bx\\s*2\\b)`, 'i');
+  const rank = (p) => (named.test(p.name) ? 0 : 1);
+  const distance = (p) => Math.abs(Math.min(p.width, p.height) - size.width) + Math.abs(Math.max(p.width, p.height) - size.height);
   return papers
     .filter((p) => close(Math.min(p.width, p.height), size.width) && close(Math.max(p.width, p.height), size.height))
-    .sort((a, b) => a.name.length - b.name.length)[0] || null;
+    .sort((a, b) => rank(a) - rank(b) || distance(a) - distance(b) || a.name.length - b.name.length)[0] || null;
 }
 
 function pickPrinter(printers) {
@@ -77,7 +84,11 @@ async function print(row, sizeKey) {
   const { printer } = await findPrinter();
   if (!printer) throw httpError(503, 'Kodak 305 não encontrada. Confira se ela está ligada no USB e com o driver instalado.');
   const paper = findPaper(printer.papers, size);
-  if (!paper) throw httpError(503, `O driver da ${printer.name} não oferece o papel ${size.label}.`);
+  if (!paper) {
+    const offered = printer.papers.map((p) => `${p.name} (${p.width}x${p.height})`).join(', ');
+    console.error(`[impressão] nenhum papel ${size.label} na ${printer.name}; papéis do driver: ${offered}`);
+    throw httpError(503, `O driver da ${printer.name} não oferece o papel ${size.label}.`);
+  }
 
   const file = await ensurePrintFile(row);
   try {
@@ -106,7 +117,7 @@ async function describe() {
   for (const [key, size] of Object.entries(SIZES)) {
     sizes[key] = { label: size.label, paper: printer ? findPaper(printer.papers, size)?.name || null : null };
   }
-  return { supported: true, printer: printer?.name || null, sizes, printers: printers.map((p) => p.name) };
+  return { supported: true, printer: printer?.name || null, sizes, papers: printer?.papers || [], printers: printers.map((p) => p.name) };
 }
 
 module.exports = { SUPPORTED, SIZES, printPhoto, describe, findPaper, pickPrinter };

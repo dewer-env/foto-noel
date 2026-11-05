@@ -1,6 +1,6 @@
 # Usado pelo servidor (server/printing.js) para falar com as impressoras do Windows.
 #   -Mode list : lista as impressoras e os papeis de cada uma, em JSON
-#   -Mode print: imprime a imagem inteira na folha, sem cortar e sem dialogo
+#   -Mode print: imprime preenchendo a folha toda, como o app da Kodak, sem dialogo
 # Fica so em ASCII: o PowerShell do Windows le arquivos sem BOM como ANSI.
 param(
   [Parameter(Mandatory = $true)][ValidateSet('list', 'print')][string]$Mode,
@@ -54,7 +54,8 @@ try {
       param($sender, $e)
       $img = $script:photo
       $bounds = $e.PageBounds
-      $scale = [Math]::Min($bounds.Width / $img.Width, $bounds.Height / $img.Height)
+      # Max preenche a folha (corta o excesso no centro, sem faixas brancas); Min caberia inteira.
+      $scale = [Math]::Max($bounds.Width / $img.Width, $bounds.Height / $img.Height)
       $w = $img.Width * $scale
       $h = $img.Height * $scale
       # O desenho comeca na area imprimivel; desconta a margem fisica para centralizar na folha.
