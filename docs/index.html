@@ -631,6 +631,13 @@ import { uuid } from '../shared/uuid.js';</code></pre>
       <button class="ind2" data-f="scripts/ws-listen.js">ws-listen.js</button>
       <button class="ind2" data-f="scripts/supervisor.js">supervisor.js ★</button>
       <button class="ind2" data-f="scripts/estresse.js">estresse.js</button>
+      <button class="ind2" data-f="scripts/modelos-moldura.js">modelos-moldura.js</button>
+      <button class="ind2" data-f="scripts/molduras-natal.js">molduras-natal.js</button>
+      <button class="ind2" data-f="scripts/moldura-calendario.js">moldura-calendario.js</button>
+      <button class="ind2" data-f="scripts/moldura-enfeites.js">moldura-enfeites.js</button>
+      <button class="ind2" data-f="scripts/moldura-medidas.js">moldura-medidas.js</button>
+      <div class="dir ind">molduras/</div>
+      <button class="ind2" data-f="molduras/LEIA-ME.txt">LEIA-ME.txt</button>
       <div class="dir ind">docs/</div>
       <button class="ind2" data-f="docs/index.html">index.html</button>
       <div class="ghost ind">node_modules/ <small>(gerado)</small></div>
@@ -728,8 +735,10 @@ import { uuid } from '../shared/uuid.js';</code></pre>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/photos/:id</code></td><td>—</td><td>uma foto</td><td>—</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/photos/:id/original|display|thumb</code></td><td>—</td><td>a imagem</td><td>—</td></tr>
       <tr><td><span class="m PATCH">PATCH</span></td><td><code>/api/photos/:id</code></td><td><code>{ "hiddenFromDisplay": true }</code></td><td>foto atualizada</td><td class="ev">photo.updated</td></tr>
-      <tr><td><span class="m POST">POST</span></td><td><code>/api/photos/:id/print</code></td><td><code>{ "size": "4x6" | "6x8" }</code></td><td>enviada à Kodak · <code>{ printer, paper, size, printCount }</code> · 501 fora do Windows</td><td class="ev">photo.printed</td></tr>
+      <tr><td><span class="m POST">POST</span></td><td><code>/api/photos/:id/print</code></td><td><code>{ "size": "4x6" | "6x8", "frame": "natal" }</code></td><td>enviada à Kodak · <code>{ printer, paper, size, printCount }</code> · 501 fora do Windows</td><td class="ev">photo.printed</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/printer</code></td><td>—</td><td>impressora e papéis que o servidor encontrou</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/photos/:id/preview/4x6|6x8?frame=natal</code></td><td>—</td><td>prévia com a moldura escolhida, como sai no papel · 409 se faltar o formato</td><td>—</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/printer/frames</code></td><td>—</td><td>molduras disponíveis, uma por pasta em <code>molduras/</code></td><td>—</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/status</code></td><td>—</td><td>tempo no ar, telas conectadas, números do dia, espaço em disco</td><td>—</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/status/</code></td><td>—</td><td>página de status</td><td>—</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/shared/icon-180|192|512.png</code></td><td>—</td><td>ícone do app (gerado do SVG)</td><td>—</td></tr>
@@ -792,7 +801,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
       <tr><th>#</th><th>Ponto de atenção</th><th>Ação</th></tr>
       <tr><td>1</td><td><b>Impressora Kodak 305</b>: driver a confirmar no sistema do evento; velocidade e custo por cópia são o gargalo do negócio</td><td>Instalar o driver e medir a velocidade real na etapa final de testes</td></tr>
       <tr><td>2</td><td>Fotos da página não vão para o rolo da câmera</td><td>Wi-Fi bom e fila sempre perto de 0</td></tr>
-      <tr><td>3</td><td>Computador é ponto único de falha</td><td>Backup para HD externo (<b>pendente</b>) e no-break</td></tr>
+      <tr><td>3</td><td>Computador é ponto único de falha</td><td>Backup descartado; cuidado físico com o notebook e no-break</td></tr>
       <tr><td>4</td><td>Toque extra em "Usar foto" pode atrapalhar o ritmo</td><td>Testar com o fotógrafo real; se atrapalhar, app nativo</td></tr>
       <tr><td>5</td><td>Bateria, rede trocada, terminal fechado</td><td>Checklist e treino da equipe</td></tr>
     </table></div>
@@ -805,7 +814,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
   <h2>Decisões tomadas</h2>
   <p class="sec-sub">O que escolhemos e por quê, para não esquecer.</p>
   <div class="decisions">
-    <div class="card decision"><h3>💻 Mac <i>ou</i> Windows no evento</h3><p>Ainda indefinido. O servidor não usa nada exclusivo de um sistema; o que for específico fica em <code>scripts/</code> (Fase 5).</p></div>
+    <div class="card decision"><h3>💻 Windows no evento</h3><p>Decidido: o notebook Windows, com IP fixo <code>192.168.100.10</code> no Wi-Fi do roteador. O desenvolvimento continua no Mac, e o núcleo funciona nos dois sistemas; só a impressão é exclusiva do Windows.</p></div>
     <div class="card decision"><h3>🗄️ node:sqlite</h3><p>Já vem no Node, nada para compilar no Windows. No lugar do <code>better-sqlite3</code>. Exige Node ≥ 22.13.</p></div>
     <div class="card decision"><h3>🔄 heic-convert como plano B</h3><p>Substitui o <code>sips</code> (que só existe no Mac). JS puro, roda em qualquer sistema.</p></div>
     <div class="card decision"><h3>📁 Original sempre guardado</h3><p>Nenhuma foto se perde, mesmo se o processamento falhar. A impressão futura usa a melhor qualidade.</p></div>
@@ -819,8 +828,8 @@ import { uuid } from '../shared/uuid.js';</code></pre>
     <div class="card decision"><h3>⚠️ Erro definitivo não some</h3><p>Foto recusada pelo servidor fica no iPhone em "Fotos com erro" até alguém tentar de novo ou descartar (com confirmação).</p></div>
     <div class="card decision"><h3>📂 Uma pasta por família</h3><p><code>fotos/&lt;dia&gt;/familia-047/</code> com nomes legíveis: plano B se o balcão falhar. Usa o dia <i>da família</i>, para quem atravessa a meia-noite não se misturar com a 47 do dia seguinte.</p></div>
     <div class="card decision"><h3>⏱️ Tempos da vitrine no endereço</h3><p>A decisão sobre os tempos ainda está em aberto. Com <code>?novo=&amp;slide=&amp;horas=</code>, dá para ajustar no dia sem mexer no código.</p></div>
-    <div class="card decision"><h3>🖱️ Dois cliques nos dois sistemas</h3><p>O supervisor é escrito em Node e serve para Mac e Windows; os arquivos de início só o chamam. Assim, o sistema do evento pode ser decidido depois. Iniciar ao ligar o computador fica para quando ele for definido.</p></div>
-    <div class="card decision"><h3>💾 Backup pendente</h3><p>Fica para o futuro, junto com o HD externo. Até lá, se o disco do computador falhar, as fotos se perdem.</p></div>
+    <div class="card decision"><h3>🖱️ Dois cliques nos dois sistemas</h3><p>O supervisor é escrito em Node e serve para Mac e Windows; os arquivos de início só o chamam. Assim, o sistema do evento pode ser decidido depois. Iniciar sozinho ao ligar o computador foi descartado: o operador dá dois cliques.</p></div>
+    <div class="card decision"><h3>💾 Sem backup</h3><p>Decidido não fazer. As fotos ficam só no disco do notebook: se ele falhar, as fotos se perdem.</p></div>
     <div class="card decision"><h3>🌐 Um endereço só</h3><p>A fila pertence ao endereço (IP vs. .local, Safari vs. tela de início). No evento: sempre o mesmo, de preferência o IP fixo.</p></div>
     <div class="card decision"><h3>🖨️ Impressão aos poucos</h3><p>A impressora é a Kodak 305 e, por enquanto, a impressão é só no Windows. O balcão pede ao servidor, que manda direto para a Kodak, sem diálogo, em 10x15 ou 15x20. A foto preenche a folha, como no app da Kodak: no 10x15 corta cerca de 7% em cima e embaixo.</p></div>
   </div>
@@ -908,6 +917,7 @@ const FILES = {
       'Aplica a rotação do EXIF (.rotate()) e reduz sem esticar nem cortar.',
       'Se o sharp falhar e o arquivo for HEIC: converte com heic-convert e tenta de novo.',
       'printVersion(original, destino): versão para impressão em JPEG, resolução total e já girada.',
+      'framedVersion(): acha a parte transparente da moldura, encaixa a foto nela (cortando o excesso no centro) e põe a moldura por cima.',
       'looksLikeHeic(): reconhece HEIC pelos primeiros bytes, sem confiar no nome do arquivo.',
     ],
     uses: ['server/config.js'],
@@ -1037,6 +1047,54 @@ const FILES = {
     uses: ['server/config.js', 'server/index.js'],
     pkgs: ['node:child_process', 'node:fs', 'node:readline'],
   },
+  'scripts/modelos-moldura.js': {
+    role: 'Gera os 4 modelos para desenhar as molduras: node scripts/modelos-moldura.js.',
+    does: [
+      'Usa o tamanho exato que a Kodak 305 imprime, com a sobra, a 300 dpi: 10x15 = 1866x1227 e 15x20 = 2433x1866.',
+      'Marca a sobra cortada (vermelho), a borda sugerida (dourado, 7%), a linha de segurança dos textos (azul) e a área da foto (cinza).',
+      'Salva em molduras/modelos/modelo-<tamanho>-<orientação>.png.',
+    ],
+    uses: ['server/config.js', 'scripts/moldura-medidas.js'],
+    pkgs: ['sharp'],
+  },
+  'scripts/molduras-natal.js': {
+    role: 'Gera as molduras prontas, cada uma na sua pasta: node scripts/molduras-natal.js.',
+    does: [
+      'Natal: borda vermelha em degradê, filete dourado, azevinho nos cantos, flocos de neve e "Feliz Natal" embaixo.',
+      'Neve: variação simples em azul e prata, com "Boas Festas", para testar a troca de moldura.',
+      'Respeita as áreas dos modelos: o centro fica transparente e o texto fica dentro da linha de segurança.',
+      'Substitui os arquivos das pastas molduras/natal e molduras/neve.',
+    ],
+    uses: ['server/config.js', 'scripts/moldura-medidas.js', 'scripts/moldura-enfeites.js'],
+    pkgs: ['sharp'],
+  },
+  'scripts/moldura-calendario.js': {
+    role: 'Gera a moldura Calendário 2027 em molduras/calendario/: node scripts/moldura-calendario.js.',
+    does: [
+      'Horizontal: foto à esquerda e os 12 meses em 3 colunas à direita. Vertical: foto em cima e os meses em 6 colunas embaixo.',
+      'Tudo num cartão creme dentro da borda vermelha de Natal, com flocos de neve e azevinho nos cantos.',
+      'Título "Feliz Natal · 2027", domingos em vermelho, semana começando no domingo.',
+      'Escreve nome.txt com "Calendário 2027", para o nome aparecer com acento no balcão.',
+    ],
+    uses: ['server/config.js', 'scripts/moldura-medidas.js', 'scripts/moldura-enfeites.js'],
+    pkgs: ['sharp'],
+  },
+  'scripts/moldura-enfeites.js': {
+    role: 'Os enfeites de Natal em SVG (floco de neve e azevinho), usados pelas molduras Natal e Calendário.',
+    does: ['FLAKE e HOLLY vão dentro de <defs>; holly() e flake() posicionam cada enfeite.'],
+  },
+  'scripts/moldura-medidas.js': {
+    role: 'As medidas das molduras, usadas pelos dois geradores.',
+    does: ['Papel da Kodak 305 com a sobra, a 300 dpi; linha de segurança de 4 mm; borda de 7% do lado menor.'],
+  },
+  'molduras/LEIA-ME.txt': {
+    role: 'Explica para quem desenha e para o operador como as molduras funcionam.',
+    does: [
+      'Uma pasta por moldura, com os 4 arquivos e o tamanho de cada um, em PNG com centro transparente.',
+      'O nome da pasta vira o nome no balcão; como usar "Adicionar moldura" e as prévias.',
+      'Trocar uma moldura é só substituir o arquivo, sem reiniciar.',
+    ],
+  },
   'scripts/estresse.js': {
     role: 'Teste de carga: npm run estresse [quantidade] [endereço].',
     does: [
@@ -1060,6 +1118,9 @@ const FILES = {
       'Escolhe o papel do driver pelas medidas: 4x6 = 10x15 e 6x8 = 15x20, em qualquer orientação.',
       'Gera a versão de impressão na primeira vez e reaproveita depois (_versoes/<id>-print.jpg).',
       'Imprime uma foto por vez, na ordem dos cliques, chamando o imprimir.ps1.',
+      'Com moldura: monta a foto no tamanho exato do papel (300 dpi) com o PNG da moldura escolhida (molduras/<id>/) por cima, imprime e apaga o arquivo temporário.',
+      'listFrames(): uma moldura por pasta em molduras/, lida a cada pedido; o nome da pasta vira o nome no balcão.',
+      'Prévia: a mesma montagem a 150 dpi, a partir da versão display e sem a sobra cortada pela Kodak; funciona sem impressora.',
     ],
     uses: ['server/images.js', 'server/imprimir.ps1', 'server/config.js'],
     pkgs: ['node:child_process', 'node:fs', 'node:path'],
@@ -1085,7 +1146,7 @@ const FILES = {
   },
   'public/balcao/index.html': {
     role: 'A página do operador (http://IP:3000/balcao/), no computador central.',
-    does: ['Topo com busca pelo código, seletor de dia, totais e conexão.', 'Lista de famílias com as miniaturas.', 'Tela de foto ampliada, com "Ocultar da vitrine", "Abrir original", "Imprimir 10x15" e "Imprimir 15x20".'],
+    does: ['Topo com busca pelo código, seletor de dia, totais e conexão.', 'Lista de famílias com as miniaturas.', 'Tela de foto ampliada, com "Ocultar da vitrine", "Imprimir 10x15" e "Imprimir 15x20".'],
     uses: ['public/balcao/balcao.js', 'public/balcao/balcao.css'],
   },
   'public/balcao/balcao.js': {
@@ -1198,7 +1259,8 @@ const FLOWS = {
       [C, 'cliente', 'Diz ao operador: "sou a 47".'],
       [C, 'balcao.js', 'O operador digita 47 e a tela mostra só essa família, no dia escolhido.'],
       [C, 'balcao.js', 'Um clique amplia a foto, usando <code>/api/photos/:id/display</code>.'],
-      [OK, 'Abrir original', 'Abre o arquivo original no navegador.'],
+      [OK, 'Adicionar moldura ▾', 'Abre um menu com as molduras (Natal, Neve…). Escolhida, o botão mostra "Moldura: Natal ▾" e o menu ganha "Sem moldura". Fechar a foto tira a moldura.'],
+      [C, 'Prévia com moldura', 'Com a moldura ligada, mostra como a foto sai no papel, no corte do 10x15 (o 15x20 fica praticamente igual), usando <code>/api/photos/:id/preview/4x6?frame=…</code>.'],
       [OK, 'Imprimir 10x15 / 15x20', 'Manda a foto direto para a Kodak, sem diálogo. Só com o servidor no Windows.'],
       [W, 'Contagem de impressões', 'Cada impressão aceita soma 1; o evento <code>photo.printed</code> mostra "🖨 2x" em todos os balcões.'],
       [W, 'Ocultar da vitrine', '<code>PATCH /api/photos/:id</code>; o evento <code>photo.updated</code> tira a foto do iPad na hora.'],

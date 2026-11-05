@@ -8,6 +8,7 @@ module.exports = {
   PORT: Number(process.env.PORT) || 3000,
   VERSION: require('../package.json').version,
   PUBLIC_DIR: path.join(ROOT, 'public'),
+  FRAMES_DIR: path.join(ROOT, 'molduras'),
   DATA_DIR,
   PHOTOS_DIR: path.join(DATA_DIR, 'fotos'),
   TMP_DIR: path.join(DATA_DIR, 'tmp'),

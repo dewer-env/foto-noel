@@ -144,18 +144,36 @@ router.patch('/:id', express.json(), (req, res) => {
   res.json(photo);
 });
 
+// Prévia com moldura (?frame=natal): como a foto vai sair no papel. Sem cache, porque a
+// moldura pode ser trocada.
+router.get('/:id/preview/:size', async (req, res) => {
+  const row = db.getPhotoRow(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Foto não encontrada' });
+  if (!printing.SIZES[req.params.size]) return res.status(400).json({ error: `Tamanho deve ser ${Object.keys(printing.SIZES).join(' ou ')}` });
+  if (!printing.isFrame(req.query.frame)) return res.status(400).json({ error: 'Moldura desconhecida' });
+  try {
+    const jpeg = await printing.framedPreview(row, req.params.size, req.query.frame);
+    res.set('Cache-Control', 'no-store').type('jpeg').send(jpeg);
+  } catch (err) {
+    if (!err.status) console.error(`[prévia] família ${row.code}:`, err.message);
+    res.status(err.status || 500).json({ error: err.status ? err.message : 'Não foi possível montar a prévia.' });
+  }
+});
+
 router.post('/:id/print', express.json(), async (req, res) => {
   const row = db.getPhotoRow(req.params.id);
   if (!row) return res.status(404).json({ error: 'Foto não encontrada' });
   const { size } = req.body || {};
+  const frame = req.body?.frame || null; // id da moldura (pasta em molduras/) ou nada
+  if (frame !== null && !printing.isFrame(frame)) return res.status(400).json({ error: 'Moldura desconhecida' });
   if (!printing.SIZES[size]) return res.status(400).json({ error: `"size" deve ser ${Object.keys(printing.SIZES).join(' ou ')}` });
   if (!printing.SUPPORTED) return res.status(501).json({ error: 'Por enquanto, a impressão só funciona com o servidor no Windows.' });
 
   try {
-    const result = await printing.printPhoto(row, size);
+    const result = await printing.printPhoto(row, size, frame);
     const photo = db.addPrint(row.id);
     events.broadcast({ type: 'photo.printed', photo: { id: photo.id, printCount: photo.printCount } });
-    console.log(`[impressão] família ${row.code}: ${result.size} na ${result.printer} (papel "${result.paper}"), ${photo.printCount}ª impressão`);
+    console.log(`[impressão] família ${row.code}: ${result.size}${result.frame ? ` com moldura ${result.frame}` : ''} na ${result.printer} (papel "${result.paper}"), ${photo.printCount}ª impressão`);
     res.json({ ...result, printCount: photo.printCount });
   } catch (err) {
     if (!err.status) console.error(`[impressão] família ${row.code}:`, err.message);

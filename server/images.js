@@ -52,4 +52,43 @@ async function printVersion(originalPath, printPath) {
     sharp(input, { failOn: 'none' }).rotate().jpeg({ quality: 95 }).toFile(printPath));
 }
 
-module.exports = { processPhoto, printVersion, looksLikeHeic };
+async function isLandscape(imagePath) {
+  const { width, height } = await sharp(imagePath).metadata();
+  return width > height;
+}
+
+// Retângulo que envolve a parte transparente da moldura: é onde a foto entra.
+// Sem parte transparente, a foto ocupa a folha toda.
+function transparentBox(data, { width, height, channels }) {
+  let left = width, top = height, right = -1, bottom = -1;
+  for (let y = 0; y < height; y++) {
+    const row = y * width * channels;
+    for (let x = 0; x < width; x++) {
+      if (data[row + x * channels + channels - 1] >= 128) continue;
+      if (x < left) left = x;
+      if (x > right) right = x;
+      if (y < top) top = y;
+      if (y > bottom) bottom = y;
+    }
+  }
+  if (right < 0) return { left: 0, top: 0, width, height };
+  return { left, top, width: right - left + 1, height: bottom - top + 1 };
+}
+
+// Foto encaixada na área transparente da moldura (corta o excesso no centro) e a moldura
+// por cima. A moldura é esticada para o tamanho exato; os modelos já têm a proporção certa.
+async function framedVersion(photoPath, framePath, width, height, quality = 95) {
+  const frame = await sharp(framePath).resize(width, height, { fit: 'fill' }).ensureAlpha().raw()
+    .toBuffer({ resolveWithObject: true });
+  const hole = transparentBox(frame.data, frame.info);
+  const photo = await sharp(photoPath).resize(hole.width, hole.height, { fit: 'cover' }).toBuffer();
+  return sharp({ create: { width, height, channels: 3, background: '#ffffff' } })
+    .composite([
+      { input: photo, left: hole.left, top: hole.top },
+      { input: frame.data, raw: frame.info },
+    ])
+    .jpeg({ quality })
+    .toBuffer();
+}
+
+module.exports = { processPhoto, printVersion, isLandscape, framedVersion, looksLikeHeic };

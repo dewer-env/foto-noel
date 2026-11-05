@@ -13,4 +13,9 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Molduras disponíveis (uma pasta por desenho em molduras/), para o balcão oferecer a escolha.
+router.get('/frames', (req, res) => {
+  res.json(printing.listFrames());
+});
+
 module.exports = router;

@@ -37,7 +37,10 @@
       <span class="visibility" id="viewerVisibility"></span>
       <span class="printed" id="viewerPrinted"></span>
       <button class="btn" id="viewerHide" type="button"></button>
-      <a class="btn" id="viewerOriginal" target="_blank" rel="noopener">Abrir original</a>
+      <div class="frame-menu" id="frameMenu">
+        <button class="btn frame-toggle" id="viewerFrame" type="button" aria-haspopup="menu" aria-expanded="false">Adicionar moldura ▾</button>
+        <div class="frame-options" id="viewerFrameOptions" role="menu" hidden></div>
+      </div>
       <button class="btn btn-primary print-btn" type="button" data-size="4x6" data-label="Imprimir 10x15">Imprimir 10x15</button>
       <button class="btn btn-primary print-btn" type="button" data-size="6x8" data-label="Imprimir 15x20">Imprimir 15x20</button>
       <button class="btn" id="viewerClose" type="button" aria-label="Fechar">✕</button>
@@ -45,6 +48,9 @@
     <div class="viewer-body" id="viewerBody">
       <button class="nav" id="viewerPrev" type="button" aria-label="Foto anterior">‹</button>
       <img id="viewerImage" alt="">
+      <div class="previews" id="viewerPreviews" hidden>
+        <figure class="preview" data-size="4x6"><img alt=""><figcaption></figcaption></figure>
+      </div>
       <button class="nav" id="viewerNext" type="button" aria-label="Próxima foto">›</button>
     </div>
   </div>

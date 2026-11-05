@@ -17,6 +17,9 @@ const state = {
   loadFailed: false,
   hiding: false,
   printing: null,     // tamanho sendo enviado para a impressora
+  frame: null,        // id da moldura escolhida; começa sem e volta a ficar sem ao fechar a foto
+  frameMenuOpen: false,
+  frames: null,       // molduras do servidor: [{ id, name, sizes }]
 };
 
 function localDay(date = new Date()) {
@@ -130,12 +133,12 @@ async function printPhoto(size) {
     const res = await fetch(`/api/photos/${encodeURIComponent(photo.id)}/print`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ size }),
+      body: JSON.stringify({ size, frame: state.frame }),
     });
     const body = await res.json().catch(() => ({}));
     if (res.ok) {
       photo.printCount = body.printCount;
-      toast(`Família ${photo.code}: foto enviada para a impressora (${body.size}).`);
+      toast(`Família ${photo.code}: foto enviada para a impressora (${body.size}${body.frame ? `, moldura ${body.frame}` : ''}).`);
     } else {
       toast(body.error || 'Não foi possível imprimir.');
     }
@@ -144,6 +147,107 @@ async function printPhoto(size) {
   } finally {
     state.printing = null;
     renderViewer();
+  }
+}
+
+// Busca de novo a cada foto aberta: uma moldura colocada na pasta aparece sem recarregar.
+async function loadFrames() {
+  try {
+    state.frames = await getJSON('/api/printer/frames');
+  } catch {
+    state.frames = null; // sem resposta: o botão fica desativado até a próxima foto aberta
+  }
+  if (state.frame && !state.frames?.some((f) => f.id === state.frame)) state.frame = null;
+  renderViewer();
+}
+
+// "Adicionar moldura ▾" abre a lista de molduras; com uma escolhida, a lista também tem
+// "Sem moldura" para tirar.
+function setFrameMenu(open) {
+  if (state.frameMenuOpen === open) return;
+  state.frameMenuOpen = open;
+  renderViewer();
+  if (open) $('viewerFrameOptions').querySelector('.is-on, .frame-option')?.focus();
+}
+
+function chooseFrame(id) {
+  state.frame = id;
+  state.frameMenuOpen = false;
+  renderViewer();
+  $('viewerFrame').focus();
+}
+
+function renderFrameMenu() {
+  const hasFrames = state.frames?.length > 0;
+  if (!hasFrames || state.printing) state.frameMenuOpen = false;
+  const current = state.frames?.find((f) => f.id === state.frame);
+  const toggle = $('viewerFrame');
+  toggle.disabled = !hasFrames || !!state.printing;
+  toggle.title = hasFrames ? '' : state.frames ? 'Nenhuma moldura na pasta molduras' : 'Carregando molduras…';
+  toggle.textContent = current ? `Moldura: ${current.name} ▾` : 'Adicionar moldura ▾';
+  toggle.classList.toggle('is-on', !!current);
+  toggle.setAttribute('aria-expanded', state.frameMenuOpen);
+
+  const menu = $('viewerFrameOptions');
+  menu.hidden = !state.frameMenuOpen;
+  if (!state.frameMenuOpen) return;
+  const options = [...(current ? [{ id: null, name: 'Sem moldura' }] : []), ...state.frames];
+  menu.replaceChildren(...options.map((f) => {
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'frame-option';
+    option.setAttribute('role', 'menuitemradio');
+    option.setAttribute('aria-checked', f.id === state.frame);
+    option.classList.toggle('is-on', f.id === state.frame);
+    option.textContent = f.name;
+    option.addEventListener('click', () => chooseFrame(f.id));
+    return option;
+  }));
+}
+
+// Com moldura ligada, troca a foto ampliada pela prévia, montada pelo servidor com a mesma
+// regra da impressão (corte e moldura). Mostra o 10x15, que corta mais: se a moldura fica
+// boa nele, fica no 15x20 também.
+let previewKey = null;
+function renderPreviews(photo) {
+  const key = photo && state.frame ? `${photo.id}|${state.frame}` : null;
+  $('viewerImage').hidden = !!key;
+  $('viewerPreviews').hidden = !key;
+  if (key === previewKey) return;
+  previewKey = key;
+  for (const figure of document.querySelectorAll('.preview')) {
+    const img = figure.querySelector('img');
+    const caption = figure.querySelector('figcaption');
+    const label = 'Prévia com moldura';
+    if (img.src) URL.revokeObjectURL(img.src);
+    img.removeAttribute('src');
+    img.hidden = true;
+    figure.classList.remove('is-error');
+    if (!key) continue;
+    caption.textContent = 'Carregando prévia…';
+    loadPreview(photo.id, figure.dataset.size, state.frame).then((result) => {
+      if (previewKey !== key) { if (result.url) URL.revokeObjectURL(result.url); return; }
+      if (result.url) {
+        img.src = result.url;
+        img.alt = label;
+        img.hidden = false;
+        caption.textContent = label;
+      } else {
+        figure.classList.add('is-error');
+        caption.textContent = `${label}: ${result.error}`;
+      }
+    });
+  }
+}
+
+async function loadPreview(id, size, frame) {
+  try {
+    const url = `/api/photos/${encodeURIComponent(id)}/preview/${size}?frame=${encodeURIComponent(frame)}`;
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) return { error: (await res.json().catch(() => ({}))).error || 'prévia indisponível' };
+    return { url: URL.createObjectURL(await res.blob()) };
+  } catch {
+    return { error: 'sem conexão com o servidor' };
   }
 }
 
@@ -284,11 +388,14 @@ function openViewer(id) {
   state.viewerId = id;
   renderViewer();
   $('viewerClose').focus();
+  loadFrames();
 }
 
 function closeViewer() {
   if (!state.viewerId) return;
   state.viewerId = null;
+  state.frame = null;
+  state.frameMenuOpen = false;
   viewerShownId = null;
   renderViewer();
   $('viewerImage').removeAttribute('src');
@@ -305,7 +412,7 @@ function step(delta) {
 function renderViewer() {
   const photo = state.viewerId && state.photos.get(state.viewerId);
   $('viewer').hidden = !photo;
-  if (!photo) return;
+  if (!photo) { renderPreviews(null); return; }
 
   if (viewerShownId !== photo.id) {
     viewerShownId = photo.id;
@@ -313,7 +420,6 @@ function renderViewer() {
     $('viewerImage').removeAttribute('src');
     $('viewerImage').src = `/api/photos/${photo.id}/display`;
     $('viewerImage').alt = `Foto da família ${photo.code}`;
-    $('viewerOriginal').href = `/api/photos/${photo.id}/original`;
   }
 
   const photos = viewerPhotos();
@@ -329,6 +435,8 @@ function renderViewer() {
   $('viewerHide').disabled = state.hiding;
   $('viewerPrinted').textContent = photo.printCount ? `Impressa ${photo.printCount}x` : 'Ainda não impressa';
   $('viewerPrinted').classList.toggle('is-printed', photo.printCount > 0);
+  renderFrameMenu();
+  renderPreviews(photo);
   for (const button of document.querySelectorAll('.print-btn')) {
     button.textContent = state.printing === button.dataset.size ? 'Enviando…' : button.dataset.label;
     button.disabled = !!state.printing;
@@ -362,17 +470,23 @@ $('day').addEventListener('change', (e) => {
 
 $('viewerClose').addEventListener('click', closeViewer);
 $('viewerHide').addEventListener('click', toggleHidden);
+$('viewerFrame').addEventListener('click', () => setFrameMenu(!state.frameMenuOpen));
+document.addEventListener('click', (e) => {
+  if (state.frameMenuOpen && !$('frameMenu').contains(e.target)) setFrameMenu(false);
+});
 for (const button of document.querySelectorAll('.print-btn')) {
   button.addEventListener('click', () => printPhoto(button.dataset.size));
 }
 $('viewerPrev').addEventListener('click', () => step(-1));
 $('viewerNext').addEventListener('click', () => step(1));
 $('viewerBody').addEventListener('click', (e) => {
+  if (state.frameMenuOpen) return; // esse clique só fecha o menu de molduras
   if (e.target === e.currentTarget || e.target === $('viewerImage')) closeViewer();
 });
 
 document.addEventListener('keydown', (e) => {
   if (state.viewerId) {
+    if (e.key === 'Escape' && state.frameMenuOpen) { setFrameMenu(false); $('viewerFrame').focus(); return; }
     if (e.key === 'Escape') closeViewer();
     if (e.key === 'ArrowLeft') step(-1);
     if (e.key === 'ArrowRight') step(1);

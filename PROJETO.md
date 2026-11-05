@@ -3,6 +3,8 @@
 > Documento de referência do projeto. Para começar no Claude Code:
 > *"Leia o PROJETO.md e vamos começar pela Fase 1."*
 
+> **Atualização (2026-11-05):** o computador do evento é o **notebook Windows**. O desenvolvimento continua no Mac, e o núcleo continua funcionando nos dois sistemas, mas a impressão é só no Windows. Onde este documento diz "Mac" no papel de servidor/balcão, leia "notebook Windows".
+>
 > **Atualização (2026-10-29):**
 > - O computador central no evento pode ser **Mac ou Windows** (ainda não definido; o desenvolvimento é no Mac). Onde este documento diz "Mac" no papel de servidor/balcão, leia "computador central". O servidor e as páginas não podem depender de ferramenta de um sistema só (`sips`, `caffeinate`, `lp`/CUPS, launchd); o que for específico de sistema fica isolado em `scripts/`. Decidir o sistema antes da Fase 5 (ou junto com a impressora).
 > - **A impressão fica para depois** (Fase 6). A prioridade é a foto chegar do iPhone ao servidor, à vitrine e ao balcão.
@@ -26,7 +28,6 @@ Ação de fotos com Papai Noel em um shopping:
 4. **Impressora ainda indefinida.** O sistema imprime em qualquer impressora instalada no macOS (via CUPS/`lp`).
 
 ### Fora de escopo por enquanto (futuro)
-- Moldura/arte de Natal aplicada na foto.
 - QR code / envio digital para o cliente.
 - Pagamento.
 - App nativo iOS (ver seção 9: a arquitetura já está preparada para ele).
@@ -97,8 +98,7 @@ papainoel/
 │   ├── db.sqlite
 │   └── fotos/AAAA-MM-DD/ # originais, display e thumbs
 └── scripts/
-    ├── start.sh          # sobe servidor + caffeinate
-    └── backup.sh         # copia data/ para HD externo
+    └── start.sh          # sobe servidor + caffeinate
 ```
 
 ---
@@ -141,7 +141,9 @@ Base: `http://papainoel.local:3000`
 | `GET` | `/api/photos/:id/original` \| `/display` \| `/thumb` | arquivos de imagem |
 | `PATCH` | `/api/photos/:id` | `{ hiddenFromDisplay: true }` |
 | `GET` | `/api/printer` | impressora e papéis que o servidor encontrou: `{ supported, printer, sizes, papers, printers }` |
-| `POST` | `/api/photos/:id/print` | `{ size: "4x6" \| "6x8" }` → `{ printer, paper, size, printCount }`; avisa `photo.printed`. Só com o servidor no Windows (senão 501). |
+| `GET` | `/api/printer/frames` | molduras disponíveis: `[{ id, name, sizes }]`, uma por pasta em `molduras/` |
+| `GET` | `/api/photos/:id/preview/4x6` \| `/6x8` `?frame=natal` | prévia em JPEG de como a foto sai no papel com aquela moldura (409 se faltar o formato) |
+| `POST` | `/api/photos/:id/print` | `{ size: "4x6" \| "6x8", frame?: "natal" }` → `{ printer, paper, size, frame, printCount }`; `frame` é o id da moldura (pasta em `molduras/`), ou nada para imprimir sem; avisa `photo.printed`. Só com o servidor no Windows (senão 501). |
 
 ### Eventos WebSocket (`/ws`)
 ```json
@@ -160,9 +162,9 @@ Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que
 - [ ] **Roteador Wi-Fi dedicado**, sem cabo de internet. Rede própria (ex.: `PapaiNoel`), senha forte.
 - [ ] **Computador no Wi-Fi** (decisão de 2026-11-05: só Wi-Fi, sem cabo, para simplificar). Deixar o computador perto do roteador, com sinal forte, e de preferência na rede de 5 GHz.
 - [x] **IP fixo por reserva DHCP no roteador** só para o Windows, em `192.168.100.10` (roteador ZTE, gateway `192.168.100.1`) (decisão de 2026-11-05). A reserva é do adaptador Wi-Fi e exige o endereço físico fixo: desligar "Endereços de hardware aleatórios" para a rede. Testado em 2026-11-05: funciona e continua igual depois de reiniciar; ícones na Tela de Início do iPhone e do iPad. O Mac fica sem reserva.
-- [ ] Nome do Mac: *Ajustes → Geral → Compartilhamento → Nome do Host Local* = `papainoel`.
-- [ ] **Firewall do macOS**: permitir conexões de entrada para o Node.
-- [ ] **Mac sem dormir:** `caffeinate -dims` no `start.sh` + energia ligada na tomada.
+- [ ] **Projeto fora do OneDrive:** mover de `OneDrive\Desktop\foto-noel` para `C:\foto-noel`, para as fotos não irem para a nuvem e a sincronização não travar o banco. Depois, apagar as fotos de teste que ficaram no OneDrive.
+- [x] **Firewall do Windows:** Node permitido na rede privada (o iPhone e o iPad já acessam).
+- [ ] **Notebook sem dormir:** o `Iniciar no Windows.bat` já impede o sono enquanto estiver aberto; deixar o notebook na tomada e com a tampa aberta (ou configurar "Ao fechar a tampa: não fazer nada").
 - [ ] iPhone e iPad: **desligar "Endereço Wi-Fi privado"** para essa rede (evita trocas de identidade) e desligar o bloqueio automático de tela no iPad.
 - [ ] iPad em **Acesso Guiado** (Ajustes → Acessibilidade) para travar na vitrine.
 - [ ] Atenção: o iPhone às vezes alerta "rede sem internet" e pode tentar usar dados móveis. Manter conectado ao Wi-Fi do roteador e testar.
@@ -204,7 +206,7 @@ Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que
 ### Fase 4 — Balcão do Mac (`/balcao`)
 - [ ] Fotos chegando em tempo real, **agrupadas por família** (código grande).
 - [ ] **Busca pelo código** ("sou a 47").
-- [ ] Visualização ampliada e botão **Abrir original** (para imprimir manualmente até a Fase 6). Seleção de fotos e cópias entram com a impressão.
+- [ ] Visualização ampliada. *(O botão "Abrir original", criado para imprimir à mão antes da Fase 6, foi retirado em 2026-11-05; a rota `/api/photos/:id/original` continua existindo.)*
 - [ ] Botão **"Ocultar da vitrine"**.
 - **Pronto quando:** o operador acha qualquer foto pelo código da família e vê as fotos novas chegando em tempo real.
 - *(Impressão movida para a Fase 6.)*
@@ -214,15 +216,17 @@ Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que
 - [x] `scripts/supervisor.js`: reinicia o servidor se ele cair ou parar de responder.
 - [x] Logs em arquivo (`data/logs/AAAA-MM-DD.log`).
 - [x] Página `/status`: fotos e famílias do dia, telas conectadas, espaço em disco.
-- [ ] **Pendente para o futuro:** backup de `data/` para HD externo (manual + a cada X min, sugestão: 10 min).
-- [ ] **Pendente para o futuro:** iniciar sozinho ao ligar o computador, depois de definir o sistema do evento.
+- *Backup de `data/` para HD externo: descartado em 2026-11-05. As fotos ficam só no disco do notebook.*
+- *Iniciar sozinho ao ligar o computador: descartado em 2026-11-05. O operador dá dois cliques no `Iniciar no Windows.bat`.*
 - *(Os testes que faltam estão na etapa final, seção 10.)*
 
 ### Fase 6 — Futuro
 - [x] **Impressão direta na Kodak 305, só no Windows (2026-11-05):** dois botões na foto ampliada do balcão, "Imprimir 10x15" e "Imprimir 15x20", sem diálogo. O servidor (`server/printing.js`) acha a Kodak pelo nome, escolhe o papel do driver pelas medidas e chama `server/imprimir.ps1`, que usa a impressão nativa do Windows. Imprime uma versão em JPEG, em resolução total e já girada (`_versoes/<id>-print.jpg`, gerada na primeira impressão). A foto preenche a folha, como no app da Kodak, cortando o excesso no centro; uma impressão vai por vez. `GET /api/printer` mostra o que o servidor encontrou.
 - [x] **Contagem de impressões (2026-11-05):** quando o Windows aceita a impressão, o servidor soma 1 em `print_count` e avisa `photo.printed`. O balcão mostra "🖨 2x" na miniatura e "Impressa 2x" ou "Ainda não impressa" na foto ampliada, igual em todos os balcões abertos. A contagem não diz se o papel saiu de fato da impressora.
 - **Decidido em 2026-11-05: sem quantidade de cópias e sem seleção de várias fotos**, para manter a impressão simples e com menos chance de erro. Cada clique imprime uma cópia.
-- [ ] Moldura/arte de Natal (aplicada no servidor com `sharp`, mantendo o original).
+- [x] **Molduras na impressão (2026-11-05):** uma pasta por desenho em `molduras/` (ex.: `molduras/natal/`), cada uma com `10x15-horizontal.png`, `10x15-vertical.png`, `15x20-horizontal.png` e `15x20-vertical.png`, em PNG com centro transparente. O nome da pasta vira o nome no balcão (`neve-azul` → "Neve Azul"), ou o que estiver em `nome.txt` (para ter acento). Na hora de imprimir, o servidor monta a folha no tamanho do papel da Kodak (com a sobra, a 300 dpi), encaixa a foto na parte transparente da moldura (cortando o excesso no centro) e põe a moldura por cima, sem cobrir a foto; o original não muda. No balcão, "Adicionar moldura ▾" abre um menu com as molduras (Natal, Neve…); depois de escolher, o botão mostra "Moldura: Natal ▾" e o menu ganha "Sem moldura" para tirar. Fechar a foto também tira a moldura. Com moldura, a foto ampliada vira uma prévia (no corte do 10x15, que é o mais justo; o 15x20 fica praticamente igual), montada pelo servidor com a mesma regra da impressão e já sem a sobra que a Kodak corta; funciona também no Mac. Se faltar um formato, a prévia avisa qual arquivo falta. Modelos para desenhar em `molduras/modelos/`, gerados por `node scripts/modelos-moldura.js`. A vitrine continua mostrando a foto sem moldura.
+- [x] **2 molduras prontas (2026-11-05):** **Natal** (vermelho, filete dourado, azevinho, flocos e "Feliz Natal") e **Neve** (azul, prata, flocos e "Boas Festas"; feita às pressas, só para testar a troca de moldura). Geradas por `node scripts/molduras-natal.js`, com as mesmas medidas dos modelos (`scripts/moldura-medidas.js`).
+- [x] **Moldura Calendário 2027 (2026-11-05):** foto à esquerda (horizontal) ou em cima (vertical) e os 12 meses de 2027 no resto, num cartão creme dentro da borda vermelha de Natal (flocos de neve e azevinho), com "Feliz Natal · 2027" e domingos em vermelho. Os enfeites são compartilhados com a moldura Natal (`scripts/moldura-enfeites.js`). Gerada por `node scripts/moldura-calendario.js`. No 10x15, os números dos dias ficam pequenos (cerca de 1,5 mm): conferir a leitura no papel.
 - [ ] Layout de impressão (várias fotos por folha, margens por tamanho de papel).
 - [ ] App nativo iOS (seção 9).
 
@@ -266,7 +270,6 @@ Todos os testes que faltam ficam aqui e serão feitos juntos, numa última etapa
 ### 1. Balcão
 - [ ] **Busca:** digitar o código mostra só aquela família; um código inexistente mostra a mensagem; `Esc` limpa.
 - [ ] **Ocultar:** "Ocultar da vitrine" tira a foto do iPad na hora e "Mostrar na vitrine" traz de volta.
-- [ ] **Original:** "Abrir original" abre a foto na orientação certa e dá para imprimir ou salvar em PDF.
 - [ ] **Queda:** ao parar o servidor aparece o aviso; ao ligar de novo, o aviso some e as fotos perdidas aparecem.
 
 ### 2. Robustez do computador
@@ -296,11 +299,9 @@ Fazer no computador escolhido para o evento.
 - [ ] **Papel real:** conferir corte, margem, cores e o tempo por cópia nos dois tamanhos.
 - [ ] **Erros:** com a Kodak desligada ou sem papel, o balcão mostra uma mensagem clara e o log do dia registra o motivo.
 - [ ] **Foto em HEIC:** imprime normalmente, já que a versão de impressão é convertida para JPEG.
+- [ ] **Calendário no papel:** os dias de 2027 ficam legíveis no 10x15 e no 15x20, e a foto entra inteira na área dela.
+- [ ] **Molduras:** "Adicionar moldura ▾" abre o menu, que fecha com Esc ou clique fora sem fechar a foto; escolher Natal ou Neve mostra a prévia e trocar troca a prévia; a impressão sai com a moldura escolhida nos dois tamanhos e nas duas orientações, sem esticar a arte; "Sem moldura" e fechar a foto voltam a imprimir sem moldura; a prévia bate com o papel impresso (corte, posição da moldura e cores aproximadas).
 - [ ] **Contagem:** cada impressão aceita soma 1 na miniatura e na foto ampliada; uma impressão com erro não soma; a contagem aparece em outro balcão aberto sem recarregar e continua depois de reiniciar o servidor.
-
-### 5. Depende do que ainda será feito
-- [ ] Backup para HD externo funcionando (pendente da Fase 5).
-- [ ] Iniciar sozinho ao ligar o computador (pendente da Fase 5).
 
 ---
 
@@ -308,7 +309,7 @@ Fazer no computador escolhido para o evento.
 
 - [x] Modelo da impressora: Kodak 305.
 - [x] Tamanho da foto: duas opções, 10x15 e 15x20 (2026-11-05). A foto preenche a folha, como no app da Kodak. O 15x20 tem quase a mesma proporção 4:3 da câmera do iPhone (corte de cerca de 2%); no 10x15 corta cerca de 7% em cima e 7% embaixo numa foto horizontal, então o fotógrafo deve deixar uma folga no enquadramento.
-- [ ] Computador do evento. A impressão, por enquanto, só funciona com o servidor no Windows.
+- [x] Computador do evento: notebook Windows (2026-11-05).
 - [ ] Quanto tempo a vitrine mostra cada foto nova, e quantas horas de histórico entram no slideshow.
 - [ ] Aviso de privacidade/LGPD no local (placa) e política de exclusão das fotos após o evento.
 - [ ] Web vs. nativo para o iPhone: decidir após os testes da Fase 2.

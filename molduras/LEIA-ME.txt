@@ -1,0 +1,36 @@
+MOLDURAS PARA A IMPRESSÃO
+
+Cada moldura fica numa pasta própria, com os 4 formatos dentro, em PNG com o
+centro transparente e exatamente estes nomes:
+
+  molduras/natal/10x15-horizontal.png   (1866 x 1227 px)
+  molduras/natal/10x15-vertical.png     (1227 x 1866 px)
+  molduras/natal/15x20-horizontal.png   (2433 x 1866 px)
+  molduras/natal/15x20-vertical.png     (1866 x 2433 px)
+
+O nome da pasta vira o nome no balcão: "natal" aparece como "Natal" e
+"neve-azul" como "Neve Azul". Use só letras minúsculas sem acento, números e
+hífen. Para um nome com acento, crie na pasta um arquivo nome.txt com o nome
+(ex.: molduras/calendario/nome.txt com "Calendário 2027"). Para uma moldura
+nova, crie uma pasta nova com os 4 arquivos.
+
+A parte transparente da moldura é onde a foto entra: a foto é encaixada nesse
+retângulo (cortando o excesso no centro) e nada da moldura fica por cima dela.
+Deixe transparente só a área da foto; todo o resto deve ser opaco.
+
+Os modelos para desenhar estão na pasta "modelos". Abra o modelo no Canva,
+Photopea ou Photoshop, desenhe a moldura por cima, apague o modelo e exporte
+em PNG com fundo transparente, no mesmo tamanho em pixels.
+
+No balcão, na foto ampliada, "Adicionar moldura ▾" abre um menu com as
+molduras. Escolhida uma, o botão mostra "Moldura: Natal ▾" e a foto ampliada
+vira uma prévia de como a foto sai no papel (no corte do 10x15). Para tirar,
+abra o menu e escolha "Sem moldura". Fechar a foto também tira a moldura.
+Se faltar um formato na pasta da moldura, a prévia avisa qual arquivo falta.
+
+Para trocar uma moldura, é só substituir o arquivo; não precisa reiniciar.
+Para gerar os modelos de novo: node scripts/modelos-moldura.js
+As molduras que vieram prontas são geradas por:
+  node scripts/molduras-natal.js       (Natal e Neve)
+  node scripts/moldura-calendario.js   (Calendário 2027)
+(cuidado: esses comandos substituem os arquivos dessas pastas)
