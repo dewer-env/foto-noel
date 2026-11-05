@@ -247,7 +247,7 @@
     <div class="phase done"><b>FASE 3 ✓</b>Vitrine do iPad</div>
     <div class="phase done"><b>FASE 4 ✓</b>Balcão</div>
     <div class="phase done"><b>FASE 5 ✓</b>Robustez</div>
-    <div class="phase next"><b>FASE 6 · básico feito</b>Impressão e extras</div>
+    <div class="phase next"><b>FASE 6 · impressão no Windows</b>Impressão e extras</div>
     <div class="phase next"><b>ETAPA FINAL</b>Todos os testes que faltam</div>
   </div>
 
@@ -597,10 +597,13 @@ import { uuid } from '../shared/uuid.js';</code></pre>
       <button class="ind2" data-f="server/events.js">events.js</button>
       <button class="ind2" data-f="server/images.js">images.js</button>
       <button class="ind2" data-f="server/icons.js">icons.js</button>
+      <button class="ind2" data-f="server/printing.js">printing.js</button>
+      <button class="ind2" data-f="server/imprimir.ps1">imprimir.ps1</button>
       <div class="dir ind2">routes/</div>
       <button class="ind2" style="padding-left:58px" data-f="server/routes/sessions.js">sessions.js</button>
       <button class="ind2" style="padding-left:58px" data-f="server/routes/photos.js">photos.js</button>
       <button class="ind2" style="padding-left:58px" data-f="server/routes/status.js">status.js</button>
+      <button class="ind2" style="padding-left:58px" data-f="server/routes/printer.js">printer.js</button>
       <div class="dir ind">public/</div>
       <button class="ind2" data-f="public/index.html">index.html</button>
       <div class="dir ind2">camera/</div>
@@ -809,7 +812,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
     <div class="card decision"><h3>1️⃣ Família nº 1 automática</h3><p>O iPhone sempre tem uma família válida, mesmo que ninguém aperte "Nova família".</p></div>
     <div class="card decision"><h3>📷 Câmera nativa via &lt;input&gt;</h3><p>Resolução total e funciona em http. Custo: o toque extra em "Usar foto" (o app nativo resolveria).</p></div>
     <div class="card decision"><h3>📱 Câmera horizontal e simples</h3><p>A maioria das fotos é na horizontal, então ela é o padrão. Dois botões meio a meio, "Nova família" (com o código) e "Tirar foto", e uma faixa com as últimas fotos, que confirmam o envio com ⏳ ou ✓. Sem galeria.</p></div>
-    <div class="card decision"><h3>🧾 Balcão sem seleção por enquanto</h3><p>Por enquanto, imprime uma foto por vez pelo botão "Imprimir", com as cópias escolhidas no diálogo do sistema. Selecionar várias fotos fica para um próximo passo da Fase 6.</p></div>
+    <div class="card decision"><h3>🧾 Balcão sem seleção por enquanto</h3><p>Por enquanto, cada clique em "Imprimir 10x15" ou "Imprimir 15x20" imprime uma cópia de uma foto. Cópias e seleção de várias fotos ficam para um próximo passo da Fase 6.</p></div>
     <div class="card decision"><h3>🚫 Nova família só com conexão</h3><p>Criar família exige o servidor (é ele quem numera). Sem conexão o botão fica desativado; as fotos continuam na família atual.</p></div>
     <div class="card decision"><h3>⚠️ Erro definitivo não some</h3><p>Foto recusada pelo servidor fica no iPhone em "Fotos com erro" até alguém tentar de novo ou descartar (com confirmação).</p></div>
     <div class="card decision"><h3>📂 Uma pasta por família</h3><p><code>fotos/&lt;dia&gt;/familia-047/</code> com nomes legíveis: plano B se o balcão falhar. Usa o dia <i>da família</i>, para quem atravessa a meia-noite não se misturar com a 47 do dia seguinte.</p></div>
@@ -817,7 +820,7 @@ import { uuid } from '../shared/uuid.js';</code></pre>
     <div class="card decision"><h3>🖱️ Dois cliques nos dois sistemas</h3><p>O supervisor é escrito em Node e serve para Mac e Windows; os arquivos de início só o chamam. Assim, o sistema do evento pode ser decidido depois. Iniciar ao ligar o computador fica para quando ele for definido.</p></div>
     <div class="card decision"><h3>💾 Backup pendente</h3><p>Fica para o futuro, junto com o HD externo. Até lá, se o disco do computador falhar, as fotos se perdem.</p></div>
     <div class="card decision"><h3>🌐 Um endereço só</h3><p>A fila pertence ao endereço (IP vs. .local, Safari vs. tela de início). No evento: sempre o mesmo, de preferência o IP fixo.</p></div>
-    <div class="card decision"><h3>🖨️ Impressão aos poucos</h3><p>A impressora é a Kodak 305. O básico usa o diálogo de impressão do sistema, que funciona igual no Mac e no Windows. Imprimir direto pelo servidor fica para depois de escolher o sistema.</p></div>
+    <div class="card decision"><h3>🖨️ Impressão aos poucos</h3><p>A impressora é a Kodak 305 e, por enquanto, a impressão é só no Windows. O balcão pede ao servidor, que manda direto para a Kodak, sem diálogo, em 10x15 ou 15x20. A foto entra inteira na folha.</p></div>
   </div>
 </section>
 
@@ -902,6 +905,7 @@ const FILES = {
       'processPhoto(original, display, thumb): lê o original e gera as duas versões em paralelo.',
       'Aplica a rotação do EXIF (.rotate()) e reduz sem esticar nem cortar.',
       'Se o sharp falhar e o arquivo for HEIC: converte com heic-convert e tenta de novo.',
+      'printVersion(original, destino): versão para impressão em JPEG, resolução total e já girada.',
       'looksLikeHeic(): reconhece HEIC pelos primeiros bytes, sem confiar no nome do arquivo.',
     ],
     uses: ['server/config.js'],
@@ -924,8 +928,9 @@ const FILES = {
       'inFlight: Map em memória clientPhotoId → processamento em andamento (para reenvios simultâneos).',
       'GET /api/photos (lista), GET /api/photos/:id, GET /:id/original|display|thumb com cache longo.',
       'PATCH /api/photos/:id: oculta/mostra na vitrine e avisa photo.updated.',
+      'POST /api/photos/:id/print: { size: "4x6" | "6x8" } manda a foto para a Kodak (só no Windows).',
     ],
-    uses: ['server/db.js', 'server/events.js', 'server/images.js', 'server/config.js'],
+    uses: ['server/db.js', 'server/events.js', 'server/images.js', 'server/printing.js', 'server/config.js'],
     pkgs: ['express', 'multer', 'node:fs', 'node:path', 'node:crypto'],
   },
   'server/icons.js': {
@@ -1046,13 +1051,39 @@ const FILES = {
     uses: ['server/db.js', 'server/events.js', 'server/config.js'],
     pkgs: ['express', 'node:fs/promises'],
   },
+  'server/printing.js': {
+    role: 'A impressão direta na Kodak 305, por enquanto só no Windows.',
+    does: [
+      'Acha a impressora pelo nome (Kodak e 305) e guarda por 5 min.',
+      'Escolhe o papel do driver pelas medidas: 4x6 = 10x15 e 6x8 = 15x20, em qualquer orientação.',
+      'Gera a versão de impressão na primeira vez e reaproveita depois (_versoes/<id>-print.jpg).',
+      'Imprime uma foto por vez, na ordem dos cliques, chamando o imprimir.ps1.',
+    ],
+    uses: ['server/images.js', 'server/imprimir.ps1', 'server/config.js'],
+    pkgs: ['node:child_process', 'node:fs', 'node:path'],
+  },
+  'server/imprimir.ps1': {
+    role: 'Script do PowerShell que fala com as impressoras do Windows.',
+    does: [
+      '-Mode list: lista as impressoras e os papéis de cada uma, em JSON.',
+      '-Mode print: imprime a foto inteira na folha, centralizada, sem margem e sem diálogo.',
+      'Escrito só em ASCII, porque o PowerShell do Windows lê arquivos sem BOM como ANSI.',
+    ],
+    pkgs: ['System.Drawing (Windows)'],
+  },
+  'server/routes/printer.js': {
+    role: 'GET /api/printer: o que o servidor encontrou para imprimir.',
+    does: ['Mostra a impressora escolhida, o papel de cada tamanho e todas as impressoras instaladas. Serve para conferir a instalação.'],
+    uses: ['server/printing.js'],
+    pkgs: ['express'],
+  },
   'public/status/index.html': {
     role: 'Página http://IP:3000/status/: a saúde do sistema de relance, atualizada a cada 5 s.',
     does: ['Mostra os números de /api/status em cartões.', 'Espaço em disco fica amarelo abaixo de 10 GB e vermelho abaixo de 2 GB.', 'Avisa quando o servidor para de responder.'],
   },
   'public/balcao/index.html': {
     role: 'A página do operador (http://IP:3000/balcao/), no computador central.',
-    does: ['Topo com busca pelo código, seletor de dia, totais e conexão.', 'Lista de famílias com as miniaturas.', 'Tela de foto ampliada, com "Ocultar da vitrine", "Abrir original" e "Imprimir".'],
+    does: ['Topo com busca pelo código, seletor de dia, totais e conexão.', 'Lista de famílias com as miniaturas.', 'Tela de foto ampliada, com "Ocultar da vitrine", "Abrir original", "Imprimir 10x15" e "Imprimir 15x20".'],
     uses: ['public/balcao/balcao.js', 'public/balcao/balcao.css'],
   },
   'public/balcao/balcao.js': {
@@ -1165,7 +1196,7 @@ const FLOWS = {
       [C, 'balcao.js', 'O operador digita 47 e a tela mostra só essa família, no dia escolhido.'],
       [C, 'balcao.js', 'Um clique amplia a foto, usando <code>/api/photos/:id/display</code>.'],
       [OK, 'Abrir original', 'Abre o arquivo original no navegador.'],
-      [OK, 'Imprimir', 'Abre o diálogo de impressão do sistema com a foto inteira na folha. Impressora, papel e cópias são escolhidos nele.'],
+      [OK, 'Imprimir 10x15 / 15x20', 'Manda a foto direto para a Kodak, sem diálogo. Só com o servidor no Windows.'],
       [W, 'Ocultar da vitrine', '<code>PATCH /api/photos/:id</code>; o evento <code>photo.updated</code> tira a foto do iPad na hora.'],
     ],
     note: 'Os códigos recomeçam a cada dia. Para uma família de outro dia, troque o dia no topo antes de buscar.',

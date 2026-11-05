@@ -37,7 +37,8 @@
       <span class="visibility" id="viewerVisibility"></span>
       <button class="btn" id="viewerHide" type="button"></button>
       <a class="btn" id="viewerOriginal" target="_blank" rel="noopener">Abrir original</a>
-      <button class="btn btn-primary" id="viewerPrint" type="button">Imprimir</button>
+      <button class="btn btn-primary print-btn" type="button" data-size="4x6" data-label="Imprimir 10x15">Imprimir 10x15</button>
+      <button class="btn btn-primary print-btn" type="button" data-size="6x8" data-label="Imprimir 15x20">Imprimir 15x20</button>
       <button class="btn" id="viewerClose" type="button" aria-label="Fechar">✕</button>
     </div>
     <div class="viewer-body" id="viewerBody">
@@ -48,7 +49,6 @@
   </div>
 
   <div class="toast" id="toast" role="status" hidden></div>
-  <iframe class="print-frame" id="printFrame" title="Impressão" tabindex="-1" aria-hidden="true"></iframe>
 
   <script type="module" src="balcao.js"></script>
 </body>

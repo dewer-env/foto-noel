@@ -140,16 +140,16 @@ Base: `http://papainoel.local:3000`
 | `GET` | `/api/photos?sessionId=&day=&since=&limit=` | lista de fotos (`day` = AAAA-MM-DD, dia da família) |
 | `GET` | `/api/photos/:id/original` \| `/display` \| `/thumb` | arquivos de imagem |
 | `PATCH` | `/api/photos/:id` | `{ hiddenFromDisplay: true }` |
-| `GET` | `/api/printers` | lista de impressoras (`lpstat -p`) + padrão |
-| `POST` | `/api/photos/:id/print` | `{ printer?, copies, media? }` → `{ jobId }` |
+| `GET` | `/api/printer` | impressora e papéis que o servidor encontrou: `{ supported, printer, sizes, printers }` |
+| `POST` | `/api/photos/:id/print` | `{ size: "4x6" \| "6x8" }` → `{ printer, paper, size }`. Só com o servidor no Windows (senão 501). |
 
 ### Eventos WebSocket (`/ws`)
 ```json
 { "type": "session.created", "session": { "id": "...", "code": 47 } }
 { "type": "photo.created",   "photo":   { "id": "...", "sessionId": "...", "code": 47 } }
 { "type": "photo.updated",   "photo":   { "id": "...", "hiddenFromDisplay": true } }
-{ "type": "print.queued",    "photoId": "...", "jobId": "..." }
 ```
+*(Evento `print.queued` fica para quando houver controle das impressões.)*
 Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que perderam via `GET /api/photos?since=`.
 
 ---
@@ -157,8 +157,8 @@ Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que
 ## 7. Infraestrutura no local do evento
 
 - [ ] **Roteador Wi-Fi dedicado**, sem cabo de internet. Rede própria (ex.: `PapaiNoel`), senha forte.
-- [ ] **Mac no roteador por cabo** (mais estável), ou Wi-Fi com sinal forte.
-- [ ] **IP fixo para o Mac** (reserva DHCP no roteador), como plano B ao `.local`.
+- [ ] **Computador no Wi-Fi** (decisão de 2026-11-05: só Wi-Fi, sem cabo, para simplificar). Deixar o computador perto do roteador, com sinal forte, e de preferência na rede de 5 GHz.
+- [x] **IP fixo por reserva DHCP no roteador** só para o Windows, em `192.168.100.10` (roteador ZTE, gateway `192.168.100.1`) (decisão de 2026-11-05). A reserva é do adaptador Wi-Fi e exige o endereço físico fixo: desligar "Endereços de hardware aleatórios" para a rede. Testado em 2026-11-05: funciona e continua igual depois de reiniciar; ícones na Tela de Início do iPhone e do iPad. O Mac fica sem reserva.
 - [ ] Nome do Mac: *Ajustes → Geral → Compartilhamento → Nome do Host Local* = `papainoel`.
 - [ ] **Firewall do macOS**: permitir conexões de entrada para o Node.
 - [ ] **Mac sem dormir:** `caffeinate -dims` no `start.sh` + energia ligada na tomada.
@@ -218,8 +218,8 @@ Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que
 - *(Os testes que faltam estão na etapa final, seção 10.)*
 
 ### Fase 6 — Futuro
-- [x] **Impressão básica (Kodak 305):** botão "Imprimir" na foto ampliada do balcão. Abre o diálogo de impressão do sistema, com impressora, papel e cópias escolhidos nele. A foto entra inteira na folha, sem corte.
-- [ ] **Impressão, próximos passos:** imprimir direto pelo servidor (`GET /api/printers`, `POST /api/photos/:id/print`, evento `print.queued`), seleção de foto(s), seletor de impressora e tamanho de papel no balcão, quantidade de cópias, marcar fotos já impressas (`print_count`). Mecanismo a definir quando o sistema do computador for escolhido.
+- [x] **Impressão direta na Kodak 305, só no Windows (2026-11-05):** dois botões na foto ampliada do balcão, "Imprimir 10x15" e "Imprimir 15x20", sem diálogo. O servidor (`server/printing.js`) acha a Kodak pelo nome, escolhe o papel do driver pelas medidas e chama `server/imprimir.ps1`, que usa a impressão nativa do Windows. Imprime uma versão em JPEG, em resolução total e já girada (`_versoes/<id>-print.jpg`, gerada na primeira impressão). A foto entra inteira na folha, sem corte, e uma impressão vai por vez. `GET /api/printer` mostra o que o servidor encontrou.
+- [ ] **Impressão, próximos passos:** marcar fotos já impressas (`print_count`), quantidade de cópias, seleção de várias fotos, avisos da impressora (sem papel, desligada).
 - [ ] Moldura/arte de Natal (aplicada no servidor com `sharp`, mantendo o original).
 - [ ] Layout de impressão (várias fotos por folha, margens por tamanho de papel).
 - [ ] App nativo iOS (seção 9).
@@ -286,11 +286,13 @@ Fazer no computador escolhido para o evento.
 - [ ] Testar com o fotógrafo real, para decidir entre web e app nativo: o toque extra em "Usar foto" atrapalha o ritmo?
 - [ ] Bateria: iPhone e iPad aguentam o turno? (Levar carregadores/power bank.)
 
-### 4. Impressão na Kodak 305
-- [ ] **Driver:** instalar o driver da Kodak no computador do evento e confirmar que a impressora aparece no diálogo. O driver para Mac encontrado cita só o macOS 10.14, e o de Windows cita 7, 8 e 10; conferir a compatibilidade com o sistema real.
-- [ ] **Botão "Imprimir":** abre o diálogo com a foto certa, inteira, em uma folha só e sem margem, tanto na horizontal quanto na vertical. Testar no Chrome ou Edge.
-- [ ] **Papel real:** imprimir em 15x20 e 10x15, conferindo corte, cores e o tempo por cópia.
-- [ ] **Original em HEIC:** se a foto vier em HEIC, o botão avisa e imprime a versão reduzida; conferir se a qualidade é aceitável.
+### 4. Impressão na Kodak 305 (Windows)
+- [x] **Driver:** instalado no Windows (2026-11-05).
+- [ ] **O que o servidor encontrou:** `http://localhost:3000/api/printer` mostra a Kodak em `printer` e um papel em `4x6` e em `6x8`. Se algum vier `null`, mandar a resposta inteira.
+- [ ] **Botões:** "Imprimir 10x15" e "Imprimir 15x20" imprimem a foto certa, inteira, sem diálogo, tanto na horizontal quanto na vertical.
+- [ ] **Papel real:** conferir corte, margem, cores e o tempo por cópia nos dois tamanhos.
+- [ ] **Erros:** com a Kodak desligada ou sem papel, o balcão mostra uma mensagem clara e o log do dia registra o motivo.
+- [ ] **Foto em HEIC:** imprime normalmente, já que a versão de impressão é convertida para JPEG.
 
 ### 5. Depende do que ainda será feito
 - [ ] Backup para HD externo funcionando (pendente da Fase 5).
@@ -301,8 +303,8 @@ Fazer no computador escolhido para o evento.
 ## 11. Decisões em aberto
 
 - [x] Modelo da impressora: Kodak 305.
-- [ ] Tamanho da foto. Sugestão: 15x20, que tem a mesma proporção 4:3 da câmera do iPhone; em 10x15 sobram faixas brancas, porque a foto não é cortada.
-- [ ] Computador do evento (Mac ou Windows). O driver da Kodak 305 passou a pesar nessa decisão: confirmar qual sistema ele suporta.
+- [x] Tamanho da foto: duas opções, 10x15 e 15x20 (2026-11-05). O 15x20 tem a mesma proporção 4:3 da câmera do iPhone; no 10x15 sobram faixas brancas nas laterais, porque a foto não é cortada.
+- [ ] Computador do evento. A impressão, por enquanto, só funciona com o servidor no Windows.
 - [ ] Quanto tempo a vitrine mostra cada foto nova, e quantas horas de histórico entram no slideshow.
 - [ ] Aviso de privacidade/LGPD no local (placa) e política de exclusão das fotos após o evento.
 - [ ] Web vs. nativo para o iPhone: decidir após os testes da Fase 2.

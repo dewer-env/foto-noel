@@ -11,6 +11,7 @@ app.get('/api/health', (req, res) => res.json({ ok: true, version: VERSION }));
 app.use('/api/sessions', require('./routes/sessions'));
 app.use('/api/photos', require('./routes/photos'));
 app.use('/api/status', require('./routes/status'));
+app.use('/api/printer', require('./routes/printer'));
 app.use('/api', (req, res) => res.status(404).json({ error: 'Rota não encontrada' }));
 
 const { ICON_PATH, iconRoute } = require('./icons');

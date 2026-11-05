@@ -6,6 +6,7 @@ const express = require('express');
 const multer = require('multer');
 const db = require('../db');
 const events = require('../events');
+const printing = require('../printing');
 const { processPhoto } = require('../images');
 const { DATA_DIR, PHOTOS_DIR, TMP_DIR, MAX_UPLOAD_BYTES } = require('../config');
 
@@ -141,6 +142,23 @@ router.patch('/:id', express.json(), (req, res) => {
   const photo = db.setHiddenFromDisplay(req.params.id, hiddenFromDisplay);
   events.broadcast({ type: 'photo.updated', photo: { id: photo.id, hiddenFromDisplay: photo.hiddenFromDisplay } });
   res.json(photo);
+});
+
+router.post('/:id/print', express.json(), async (req, res) => {
+  const row = db.getPhotoRow(req.params.id);
+  if (!row) return res.status(404).json({ error: 'Foto não encontrada' });
+  const { size } = req.body || {};
+  if (!printing.SIZES[size]) return res.status(400).json({ error: `"size" deve ser ${Object.keys(printing.SIZES).join(' ou ')}` });
+  if (!printing.SUPPORTED) return res.status(501).json({ error: 'Por enquanto, a impressão só funciona com o servidor no Windows.' });
+
+  try {
+    const result = await printing.printPhoto(row, size);
+    console.log(`[impressão] família ${row.code}: ${result.size} na ${result.printer} (papel "${result.paper}")`);
+    res.json(result);
+  } catch (err) {
+    if (!err.status) console.error(`[impressão] família ${row.code}:`, err.message);
+    res.status(err.status || 500).json({ error: err.status ? err.message : 'Não foi possível preparar a foto para impressão.' });
+  }
 });
 
 module.exports = router;

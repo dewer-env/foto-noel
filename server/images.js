@@ -27,18 +27,29 @@ async function render(input, displayPath, thumbPath) {
   ]);
 }
 
-// Gera as versões display e thumb a partir do original.
 // O sharp pré-compilado nem sempre decodifica HEIC (codec HEVC); nesse caso
 // convertemos para JPEG com o heic-convert (JS puro, funciona em qualquer SO).
-async function processPhoto(originalPath, displayPath, thumbPath) {
+async function withHeicFallback(originalPath, work) {
   const input = await fs.readFile(originalPath);
   try {
-    await render(input, displayPath, thumbPath);
+    await work(input);
   } catch (err) {
     if (!looksLikeHeic(input)) throw err;
     const jpeg = await heicConvert({ buffer: input, format: 'JPEG', quality: 0.95 });
-    await render(Buffer.from(jpeg), displayPath, thumbPath);
+    await work(Buffer.from(jpeg));
   }
 }
 
-module.exports = { processPhoto, looksLikeHeic };
+// Gera as versões display e thumb a partir do original.
+async function processPhoto(originalPath, displayPath, thumbPath) {
+  await withHeicFallback(originalPath, (input) => render(input, displayPath, thumbPath));
+}
+
+// Versão para impressão: resolução total, já girada e em JPEG. O Windows não lê
+// HEIC e ignora a orientação EXIF, então o original não serve direto.
+async function printVersion(originalPath, printPath) {
+  await withHeicFallback(originalPath, (input) =>
+    sharp(input, { failOn: 'none' }).rotate().jpeg({ quality: 95 }).toFile(printPath));
+}
+
+module.exports = { processPhoto, printVersion, looksLikeHeic };
