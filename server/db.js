@@ -46,6 +46,7 @@ const stmt = {
     INSERT INTO photos (id, client_photo_id, session_id, path_original, path_display, path_thumb, created_at)
     VALUES (?, ?, ?, ?, ?, ?, ?)`),
   setHidden: db.prepare('UPDATE photos SET hidden_from_display = ? WHERE id = ?'),
+  addPrint: db.prepare('UPDATE photos SET print_count = print_count + 1 WHERE id = ?'),
   dayStats: db.prepare(`
     SELECT
       (SELECT COUNT(*) FROM sessions WHERE day = ?) AS families,
@@ -132,6 +133,12 @@ function setHiddenFromDisplay(id, hidden) {
   return getPhoto(id);
 }
 
+// Conta quando o Windows aceita a impressão, não quando a foto sai da impressora.
+function addPrint(id) {
+  stmt.addPrint.run(id);
+  return getPhoto(id);
+}
+
 module.exports = {
   db,
   createSession,
@@ -144,4 +151,5 @@ module.exports = {
   listPhotos,
   getDayStats,
   setHiddenFromDisplay,
+  addPrint,
 };

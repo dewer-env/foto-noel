@@ -728,6 +728,8 @@ import { uuid } from '../shared/uuid.js';</code></pre>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/photos/:id</code></td><td>—</td><td>uma foto</td><td>—</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/photos/:id/original|display|thumb</code></td><td>—</td><td>a imagem</td><td>—</td></tr>
       <tr><td><span class="m PATCH">PATCH</span></td><td><code>/api/photos/:id</code></td><td><code>{ "hiddenFromDisplay": true }</code></td><td>foto atualizada</td><td class="ev">photo.updated</td></tr>
+      <tr><td><span class="m POST">POST</span></td><td><code>/api/photos/:id/print</code></td><td><code>{ "size": "4x6" | "6x8" }</code></td><td>enviada à Kodak · <code>{ printer, paper, size, printCount }</code> · 501 fora do Windows</td><td class="ev">photo.printed</td></tr>
+      <tr><td><span class="m GET">GET</span></td><td><code>/api/printer</code></td><td>—</td><td>impressora e papéis que o servidor encontrou</td><td>—</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/api/status</code></td><td>—</td><td>tempo no ar, telas conectadas, números do dia, espaço em disco</td><td>—</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/status/</code></td><td>—</td><td>página de status</td><td>—</td></tr>
       <tr><td><span class="m GET">GET</span></td><td><code>/shared/icon-180|192|512.png</code></td><td>—</td><td>ícone do app (gerado do SVG)</td><td>—</td></tr>
@@ -882,7 +884,7 @@ const FILES = {
       'createSession(): maior code de hoje + 1.',
       'getCurrentSession(): família mais recente de hoje; se não houver, cria a nº 1.',
       'findPhotoIdByClientId(): o coração da idempotência ("já recebi esta foto?").',
-      'insertPhoto(), getPhoto(), getPhotoRow() (com caminhos), setHiddenFromDisplay().',
+      'insertPhoto(), getPhoto(), getPhotoRow() (com caminhos), setHiddenFromDisplay(), addPrint() (soma 1 na contagem de impressões).',
       'listPhotos(): com since = "o que veio depois de X"; sem since = "as N mais recentes". Sempre em ordem cronológica.',
       'toPhoto()/toSession(): traduzem do formato do banco para o da API.',
     ],
@@ -928,7 +930,7 @@ const FILES = {
       'inFlight: Map em memória clientPhotoId → processamento em andamento (para reenvios simultâneos).',
       'GET /api/photos (lista), GET /api/photos/:id, GET /:id/original|display|thumb com cache longo.',
       'PATCH /api/photos/:id: oculta/mostra na vitrine e avisa photo.updated.',
-      'POST /api/photos/:id/print: { size: "4x6" | "6x8" } manda a foto para a Kodak (só no Windows).',
+      'POST /api/photos/:id/print: { size: "4x6" | "6x8" } manda a foto para a Kodak (só no Windows), soma 1 na contagem e avisa photo.printed.',
     ],
     uses: ['server/db.js', 'server/events.js', 'server/images.js', 'server/printing.js', 'server/config.js'],
     pkgs: ['express', 'multer', 'node:fs', 'node:path', 'node:crypto'],
@@ -1092,6 +1094,7 @@ const FILES = {
       'Carrega as fotos do dia escolhido com /api/photos?day=…; repete ao reconectar e a cada minuto.',
       'photo.created: busca a foto e a coloca na família certa, com um destaque dourado.',
       'photo.updated: mantém o estado de "oculta" igual em todas as telas.',
+      'photo.printed: atualiza a contagem de impressões ("🖨 2x") em todos os balcões abertos.',
       'Busca pelo código exato no dia escolhido; digitar um número em qualquer lugar já vai para a busca, e Esc limpa.',
       'Foto ampliada: setas do teclado navegam e Esc fecha.',
       'Na virada do dia, passa sozinho para o dia novo, se estava vendo "hoje".',
@@ -1197,6 +1200,7 @@ const FLOWS = {
       [C, 'balcao.js', 'Um clique amplia a foto, usando <code>/api/photos/:id/display</code>.'],
       [OK, 'Abrir original', 'Abre o arquivo original no navegador.'],
       [OK, 'Imprimir 10x15 / 15x20', 'Manda a foto direto para a Kodak, sem diálogo. Só com o servidor no Windows.'],
+      [W, 'Contagem de impressões', 'Cada impressão aceita soma 1; o evento <code>photo.printed</code> mostra "🖨 2x" em todos os balcões.'],
       [W, 'Ocultar da vitrine', '<code>PATCH /api/photos/:id</code>; o evento <code>photo.updated</code> tira a foto do iPad na hora.'],
     ],
     note: 'Os códigos recomeçam a cada dia. Para uma família de outro dia, troque o dia no topo antes de buscar.',

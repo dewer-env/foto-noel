@@ -82,6 +82,12 @@ async function onPhotoCreated(id) {
 
 function onEvent(event) {
   if (event.type === 'photo.created') onPhotoCreated(event.photo.id);
+  if (event.type === 'photo.printed') {
+    const photo = state.photos.get(event.photo.id);
+    if (!photo) return;
+    photo.printCount = event.photo.printCount;
+    render();
+  }
   if (event.type === 'photo.updated') {
     const photo = state.photos.get(event.photo.id);
     if (!photo) return;
@@ -127,8 +133,12 @@ async function printPhoto(size) {
       body: JSON.stringify({ size }),
     });
     const body = await res.json().catch(() => ({}));
-    if (res.ok) toast(`Família ${photo.code}: foto enviada para a impressora (${body.size}).`);
-    else toast(body.error || 'Não foi possível imprimir.');
+    if (res.ok) {
+      photo.printCount = body.printCount;
+      toast(`Família ${photo.code}: foto enviada para a impressora (${body.size}).`);
+    } else {
+      toast(body.error || 'Não foi possível imprimir.');
+    }
   } catch {
     toast('Não foi possível imprimir. Confira a conexão e tente de novo.');
   } finally {
@@ -187,13 +197,18 @@ function tileFor(photo) {
     const badge = document.createElement('span');
     badge.className = 'badge';
     badge.textContent = 'Oculta da vitrine';
-    tile.append(img, badge);
+    const printBadge = document.createElement('span');
+    printBadge.className = 'print-badge';
+    tile.append(img, badge, printBadge);
     tile.addEventListener('click', () => openViewer(photo.id));
     tileNodes.set(photo.id, tile);
   }
   tile.classList.toggle('is-hidden', photo.hiddenFromDisplay);
   tile.querySelector('.badge').hidden = !photo.hiddenFromDisplay;
-  tile.setAttribute('aria-label', `Ampliar foto da família ${photo.code}, ${formatTime(photo.createdAt)}`);
+  tile.querySelector('.print-badge').hidden = !photo.printCount;
+  tile.querySelector('.print-badge').textContent = `🖨 ${photo.printCount}x`;
+  const printed = photo.printCount ? `, impressa ${photo.printCount}x` : '';
+  tile.setAttribute('aria-label', `Ampliar foto da família ${photo.code}, ${formatTime(photo.createdAt)}${printed}`);
   return tile;
 }
 
@@ -312,6 +327,8 @@ function renderViewer() {
   $('viewerVisibility').classList.toggle('is-hidden', photo.hiddenFromDisplay);
   $('viewerHide').textContent = photo.hiddenFromDisplay ? 'Mostrar na vitrine' : 'Ocultar da vitrine';
   $('viewerHide').disabled = state.hiding;
+  $('viewerPrinted').textContent = photo.printCount ? `Impressa ${photo.printCount}x` : 'Ainda não impressa';
+  $('viewerPrinted').classList.toggle('is-printed', photo.printCount > 0);
   for (const button of document.querySelectorAll('.print-btn')) {
     button.textContent = state.printing === button.dataset.size ? 'Enviando…' : button.dataset.label;
     button.disabled = !!state.printing;

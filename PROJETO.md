@@ -141,13 +141,14 @@ Base: `http://papainoel.local:3000`
 | `GET` | `/api/photos/:id/original` \| `/display` \| `/thumb` | arquivos de imagem |
 | `PATCH` | `/api/photos/:id` | `{ hiddenFromDisplay: true }` |
 | `GET` | `/api/printer` | impressora e papéis que o servidor encontrou: `{ supported, printer, sizes, papers, printers }` |
-| `POST` | `/api/photos/:id/print` | `{ size: "4x6" \| "6x8" }` → `{ printer, paper, size }`. Só com o servidor no Windows (senão 501). |
+| `POST` | `/api/photos/:id/print` | `{ size: "4x6" \| "6x8" }` → `{ printer, paper, size, printCount }`; avisa `photo.printed`. Só com o servidor no Windows (senão 501). |
 
 ### Eventos WebSocket (`/ws`)
 ```json
 { "type": "session.created", "session": { "id": "...", "code": 47 } }
 { "type": "photo.created",   "photo":   { "id": "...", "sessionId": "...", "code": 47 } }
 { "type": "photo.updated",   "photo":   { "id": "...", "hiddenFromDisplay": true } }
+{ "type": "photo.printed",   "photo":   { "id": "...", "printCount": 2 } }
 ```
 *(Evento `print.queued` fica para quando houver controle das impressões.)*
 Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que perderam via `GET /api/photos?since=`.
@@ -219,7 +220,8 @@ Os clientes **sempre** reconectam automaticamente e, ao reconectar, buscam o que
 
 ### Fase 6 — Futuro
 - [x] **Impressão direta na Kodak 305, só no Windows (2026-11-05):** dois botões na foto ampliada do balcão, "Imprimir 10x15" e "Imprimir 15x20", sem diálogo. O servidor (`server/printing.js`) acha a Kodak pelo nome, escolhe o papel do driver pelas medidas e chama `server/imprimir.ps1`, que usa a impressão nativa do Windows. Imprime uma versão em JPEG, em resolução total e já girada (`_versoes/<id>-print.jpg`, gerada na primeira impressão). A foto preenche a folha, como no app da Kodak, cortando o excesso no centro; uma impressão vai por vez. `GET /api/printer` mostra o que o servidor encontrou.
-- [ ] **Impressão, próximos passos:** marcar fotos já impressas (`print_count`), quantidade de cópias, seleção de várias fotos, avisos da impressora (sem papel, desligada).
+- [x] **Contagem de impressões (2026-11-05):** quando o Windows aceita a impressão, o servidor soma 1 em `print_count` e avisa `photo.printed`. O balcão mostra "🖨 2x" na miniatura e "Impressa 2x" ou "Ainda não impressa" na foto ampliada, igual em todos os balcões abertos. A contagem não diz se o papel saiu de fato da impressora.
+- **Decidido em 2026-11-05: sem quantidade de cópias e sem seleção de várias fotos**, para manter a impressão simples e com menos chance de erro. Cada clique imprime uma cópia.
 - [ ] Moldura/arte de Natal (aplicada no servidor com `sharp`, mantendo o original).
 - [ ] Layout de impressão (várias fotos por folha, margens por tamanho de papel).
 - [ ] App nativo iOS (seção 9).
@@ -289,11 +291,12 @@ Fazer no computador escolhido para o evento.
 ### 4. Impressão na Kodak 305 (Windows)
 - [x] **Driver:** instalado no Windows (2026-11-05).
 - [x] **Lista de papéis:** `imprimir.ps1 -Mode list` rodou no Windows e encontrou a `KODAK 305 Photo Printer`. O driver informa os papéis com sobra para a impressão sem borda (`4 x 6 in (102 x 152 mm)` = 409x622, `6 x 8 in (152 x 203 mm)` = 622x811), e o servidor escolhe esses dois, sem as variantes "x 2" e "border".
-- [ ] **O que o servidor encontrou:** `http://localhost:3000/api/printer` mostra a Kodak em `printer` e um papel em `4x6` e em `6x8`. Se algum vier `null`, mandar a resposta inteira.
-- [ ] **Botões:** "Imprimir 10x15" e "Imprimir 15x20" imprimem a foto certa, preenchendo a folha sem faixas brancas, sem diálogo, tanto na horizontal quanto na vertical. No 10x15, conferir se o corte de cerca de 7% em cima e embaixo não corta cabeças.
+- [x] **O que o servidor encontrou:** `http://localhost:3000/api/printer` mostra a Kodak em `printer` e um papel em `4x6` e em `6x8`. Se algum vier `null`, mandar a resposta inteira.
+- [x] **Botões (2026-11-05: os dois tamanhos, na horizontal e na vertical):** "Imprimir 10x15" e "Imprimir 15x20" imprimem a foto certa, preenchendo a folha sem faixas brancas, sem diálogo, tanto na horizontal quanto na vertical. No 10x15, conferir se o corte de cerca de 7% em cima e embaixo não corta cabeças.
 - [ ] **Papel real:** conferir corte, margem, cores e o tempo por cópia nos dois tamanhos.
 - [ ] **Erros:** com a Kodak desligada ou sem papel, o balcão mostra uma mensagem clara e o log do dia registra o motivo.
 - [ ] **Foto em HEIC:** imprime normalmente, já que a versão de impressão é convertida para JPEG.
+- [ ] **Contagem:** cada impressão aceita soma 1 na miniatura e na foto ampliada; uma impressão com erro não soma; a contagem aparece em outro balcão aberto sem recarregar e continua depois de reiniciar o servidor.
 
 ### 5. Depende do que ainda será feito
 - [ ] Backup para HD externo funcionando (pendente da Fase 5).

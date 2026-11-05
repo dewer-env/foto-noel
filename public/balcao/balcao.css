@@ -63,6 +63,10 @@ main { padding: 18px 20px 48px; }
   position: absolute; left: 6px; bottom: 6px; padding: 2px 8px; border-radius: 999px;
   background: rgba(0, 0, 0, .75); font-size: 12px;
 }
+.tile .print-badge {
+  position: absolute; right: 6px; top: 6px; padding: 2px 8px; border-radius: 999px;
+  background: var(--gold); color: #1a1408; font-size: 12px; font-weight: 700;
+}
 .tile.fresh { animation: fresh 2.5s ease-out; }
 @keyframes fresh { 0%, 60% { box-shadow: 0 0 0 3px var(--gold); } 100% { box-shadow: 0 0 0 3px transparent; } }
 
@@ -73,6 +77,8 @@ main { padding: 18px 20px 48px; }
 .viewer-title strong { color: var(--text); font-size: 28px; line-height: 1; }
 .visibility { font-size: 13px; color: var(--muted); }
 .visibility.is-hidden { color: var(--gold); font-weight: 700; }
+.printed { font-size: 13px; color: var(--muted); }
+.printed.is-printed { color: var(--gold); font-weight: 700; }
 
 .btn {
   font: inherit; font-weight: 600; color: var(--text); background: var(--surface-2); text-decoration: none;

@@ -153,8 +153,10 @@ router.post('/:id/print', express.json(), async (req, res) => {
 
   try {
     const result = await printing.printPhoto(row, size);
-    console.log(`[impressão] família ${row.code}: ${result.size} na ${result.printer} (papel "${result.paper}")`);
-    res.json(result);
+    const photo = db.addPrint(row.id);
+    events.broadcast({ type: 'photo.printed', photo: { id: photo.id, printCount: photo.printCount } });
+    console.log(`[impressão] família ${row.code}: ${result.size} na ${result.printer} (papel "${result.paper}"), ${photo.printCount}ª impressão`);
+    res.json({ ...result, printCount: photo.printCount });
   } catch (err) {
     if (!err.status) console.error(`[impressão] família ${row.code}:`, err.message);
     res.status(err.status || 500).json({ error: err.status ? err.message : 'Não foi possível preparar a foto para impressão.' });
